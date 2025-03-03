@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'com.notemat'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.icm.edu.pl/artifactory/repo/"
+    }
+    maven {
+        url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/"
+    }
+}
+
+dependencies {
+    implementation 'com.github.insubstantial:flamingo:7.3'
+    implementation 'com.github.insubstantial:substance:7.3'
+}
+
+application {
+    mainClass = 'com.notemat.main.Main'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.notemat.main.Main'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

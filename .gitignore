@@ -1,0 +1,11 @@
+# IDE directories and files
+.idea/
+*.iml
+
+# Build output directories
+/build/
+/out/
+/.gradle/
+
+# macOS specific files
+.DS_Store

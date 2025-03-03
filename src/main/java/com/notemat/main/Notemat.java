@@ -1138,9 +1138,7 @@ public class Notemat extends JFrame {
     private void setIcon() {
         try {
             setIconImage(null);
-
-            // Load the icon image from the resources folder
-            ImageIcon icon = new ImageIcon(getClass().getResource("/com/notemat/images/notemat.png"));
+            ImageIcon icon = new ImageIcon(getClass().getResource("/images/notemat.png"));
             setIconImage(icon.getImage());
         } catch (Exception e) {
             System.err.println("Error loading icon: " + e.getMessage());
