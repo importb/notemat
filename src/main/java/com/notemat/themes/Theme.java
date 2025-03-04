@@ -3,7 +3,6 @@ package com.notemat.themes;
 import com.notemat.components.ColorIcon;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
@@ -28,8 +27,7 @@ public class Theme {
                 menu.setForeground(TEXT_COLOR);
 
                 for (Component menuItemComponent : menu.getMenuComponents()) {
-                    if (menuItemComponent instanceof JMenuItem) {
-                        JMenuItem menuItem = (JMenuItem) menuItemComponent;
+                    if (menuItemComponent instanceof JMenuItem menuItem) {
                         menuItem.setFont(font);
                         menuItem.setBorder(null);
                         menuItem.setBackground(MAIN_COLOR_1);
@@ -64,64 +62,13 @@ public class Theme {
         verticalScrollBar.setBackground(MAIN_COLOR_2);
         verticalScrollBar.setForeground(MAIN_COLOR_3);
         verticalScrollBar.setFocusable(false);
+        verticalScrollBar.setUI(new ThemedScrollBarUI());
+
+        horizontalScrollBar.setBorder(BorderFactory.createEmptyBorder());
         horizontalScrollBar.setBackground(MAIN_COLOR_2);
         horizontalScrollBar.setForeground(MAIN_COLOR_3);
-
-        verticalScrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = MAIN_COLOR_3;
-                this.trackColor = MAIN_COLOR_2;
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                JButton button = super.createDecreaseButton(orientation);
-                button.setBackground(MAIN_COLOR_2);
-                button.setForeground(MAIN_COLOR_2);
-                button.setBorder(BorderFactory.createEmptyBorder());
-                button.setFocusable(false);
-                return button;
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                JButton button = super.createIncreaseButton(orientation);
-                button.setBackground(MAIN_COLOR_2);
-                button.setForeground(MAIN_COLOR_2);
-                button.setBorder(BorderFactory.createEmptyBorder());
-                button.setFocusable(false);
-                return button;
-            }
-        });
-
-        horizontalScrollBar.setUI(new BasicScrollBarUI() {
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = MAIN_COLOR_3;
-                this.trackColor = MAIN_COLOR_2;
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                JButton button = super.createDecreaseButton(orientation);
-                button.setBackground(MAIN_COLOR_2);
-                button.setForeground(MAIN_COLOR_2);
-                button.setBorder(BorderFactory.createEmptyBorder());
-                button.setFocusable(false);
-                return button;
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                JButton button = super.createIncreaseButton(orientation);
-                button.setBackground(MAIN_COLOR_2);
-                button.setForeground(MAIN_COLOR_2);
-                button.setBorder(BorderFactory.createEmptyBorder());
-                button.setFocusable(false);
-                return button;
-            }
-        });
+        horizontalScrollBar.setFocusable(false);
+        horizontalScrollBar.setUI(new ThemedScrollBarUI());
     }
 
 

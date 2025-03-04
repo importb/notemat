@@ -59,7 +59,7 @@ public class Notemat extends JFrame {
 
     public Notemat(File fileToOpen) {
         // Init
-        setTitle("com.notemat.main.Notemat");
+        setTitle("Notemat");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1024, 600);
         setLocationRelativeTo(null);
@@ -72,7 +72,6 @@ public class Notemat extends JFrame {
         int defaultFontSize = (defaultFont.equals("Lexend")) ? 16 : 14;
         mainFont = new Font(defaultFont, Font.PLAIN, defaultFontSize);
 
-        // com.notemat.main.Main
         undoManager = new UndoManager();
         createUndoRedoActions();
         createStylePanel();
