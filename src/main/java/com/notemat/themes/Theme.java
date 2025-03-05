@@ -73,7 +73,9 @@ public class Theme {
 
 
     public static void applyMainContainerStyle(JPanel mainContainer) {
+        mainContainer.setFocusable(false);
         mainContainer.setBorder(BorderFactory.createLineBorder(MAIN_COLOR_4, 2));
+        mainContainer.setBackground(MAIN_COLOR_4);
     }
 
 
@@ -221,11 +223,41 @@ public class Theme {
         fontComboBox.setForeground(TEXT_COLOR);
         fontComboBox.setFocusable(false);
 
-        // Hide the arrow
         fontComboBox.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+            @Override
             protected JButton createArrowButton() {
                 JButton arrowButton = new JButton();
-                arrowButton.setVisible(false);
+                arrowButton.setBorder(BorderFactory.createEmptyBorder());
+                arrowButton.setBackground(MAIN_COLOR_3);
+                arrowButton.setFocusable(false);
+
+                arrowButton.setFocusPainted(false);
+                arrowButton.setContentAreaFilled(false);
+                arrowButton.setRolloverEnabled(false);
+
+                arrowButton.setIcon(new javax.swing.Icon() {
+                    private final int WIDTH = 12;
+                    private final int HEIGHT = 6;
+
+                    @Override
+                    public int getIconWidth() {
+                        return WIDTH;
+                    }
+
+                    @Override
+                    public int getIconHeight() {
+                        return HEIGHT;
+                    }
+
+                    @Override
+                    public void paintIcon(Component c, Graphics g, int x, int y) {
+                        g.setColor(TEXT_COLOR);
+                        int[] xPoints = { x, x + WIDTH / 2, x + WIDTH };
+                        int[] yPoints = { y, y + HEIGHT, y };
+                        g.fillPolygon(xPoints, yPoints, 3);
+                    }
+                });
+
                 return arrowButton;
             }
         });
