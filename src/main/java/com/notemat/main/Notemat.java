@@ -30,6 +30,8 @@ public class Notemat extends JFrame {
     private boolean updatingButtons = false;
     private boolean isResizing = false;
     private boolean bulletModeEnabled = false;
+    private Point initialResizeClick;
+    private Rectangle initialBounds;
     private Point initialClick;
     private Action undoAction;
     private Action redoAction;
@@ -63,6 +65,8 @@ public class Notemat extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1024, 600);
         setLocationRelativeTo(null);
+
+
         setUndecorated(true);
 
         setIcon();
@@ -730,7 +734,6 @@ public class Notemat extends JFrame {
         };
 
         JMenuBar menuBar = new JMenuBar();
-
         menuBar.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -807,9 +810,11 @@ public class Notemat extends JFrame {
 
         glassPane.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseExited(MouseEvent e) {
-                if (!isResizing) {
-                    setCursor(lastCursor);
+            public void mousePressed(MouseEvent e) {
+                // Only start resizing if we're in a resize zone
+                if (getCursor().getType() != Cursor.DEFAULT_CURSOR) {
+                    initialResizeClick = e.getLocationOnScreen();
+                    initialBounds = getBounds();
                 }
             }
 
@@ -829,7 +834,6 @@ public class Notemat extends JFrame {
                 int w = getWidth();
                 int h = getHeight();
 
-                // Determine resize zone
                 if (x <= borderThickness && y <= borderThickness) {
                     setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
                 } else if (x >= w - borderThickness && y <= borderThickness) {
@@ -853,40 +857,65 @@ public class Notemat extends JFrame {
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                // Only proceed if resizing
+                if (initialResizeClick == null || initialBounds == null) return;
                 isResizing = true;
-                Point p = e.getPoint();
-                int x = p.x;
-                int y = p.y;
-                int w = getWidth();
-                int h = getHeight();
 
-                // Store original location
-                int originalX = getLocation().x;
-                int originalY = getLocation().y;
+                Point currentPoint = e.getLocationOnScreen();
+                int deltaX = currentPoint.x - initialResizeClick.x;
+                int deltaY = currentPoint.y - initialResizeClick.y;
 
-                // Resize logic
-                if (getCursor().getType() == Cursor.NW_RESIZE_CURSOR) {
-                    setSize(w - x, h - y);
-                    setLocation(originalX + x, originalY + y);
-                } else if (getCursor().getType() == Cursor.NE_RESIZE_CURSOR) {
-                    setSize(x, h - y);
-                    setLocation(originalX, originalY + y);
-                } else if (getCursor().getType() == Cursor.SW_RESIZE_CURSOR) {
-                    setSize(w - x, y);
-                    setLocation(originalX + x, originalY);
-                } else if (getCursor().getType() == Cursor.SE_RESIZE_CURSOR) {
-                    setSize(x, y);
-                } else if (getCursor().getType() == Cursor.W_RESIZE_CURSOR) {
-                    setSize(w - x, h);
-                    setLocation(originalX + x, originalY);
-                } else if (getCursor().getType() == Cursor.E_RESIZE_CURSOR) {
-                    setSize(x, h);
-                } else if (getCursor().getType() == Cursor.N_RESIZE_CURSOR) {
-                    setSize(w, h - y);
-                    setLocation(originalX, originalY + y);
-                } else if (getCursor().getType() == Cursor.S_RESIZE_CURSOR) {
-                    setSize(w, y);
+                int newX = initialBounds.x;
+                int newY = initialBounds.y;
+                int newWidth = initialBounds.width;
+                int newHeight = initialBounds.height;
+
+                int cursorType = getCursor().getType();
+                switch (cursorType) {
+                    case Cursor.NW_RESIZE_CURSOR:
+                        newX = initialBounds.x + deltaX;
+                        newY = initialBounds.y + deltaY;
+                        newWidth = initialBounds.width - deltaX;
+                        newHeight = initialBounds.height - deltaY;
+                        break;
+                    case Cursor.NE_RESIZE_CURSOR:
+                        newY = initialBounds.y + deltaY;
+                        newWidth = initialBounds.width + deltaX;
+                        newHeight = initialBounds.height - deltaY;
+                        break;
+                    case Cursor.SW_RESIZE_CURSOR:
+                        newX = initialBounds.x + deltaX;
+                        newWidth = initialBounds.width - deltaX;
+                        newHeight = initialBounds.height + deltaY;
+                        break;
+                    case Cursor.SE_RESIZE_CURSOR:
+                        newWidth = initialBounds.width + deltaX;
+                        newHeight = initialBounds.height + deltaY;
+                        break;
+                    case Cursor.W_RESIZE_CURSOR:
+                        newX = initialBounds.x + deltaX;
+                        newWidth = initialBounds.width - deltaX;
+                        break;
+                    case Cursor.E_RESIZE_CURSOR:
+                        newWidth = initialBounds.width + deltaX;
+                        break;
+                    case Cursor.N_RESIZE_CURSOR:
+                        newY = initialBounds.y + deltaY;
+                        newHeight = initialBounds.height - deltaY;
+                        break;
+                    case Cursor.S_RESIZE_CURSOR:
+                        newHeight = initialBounds.height + deltaY;
+                        break;
+                    default:
+                        break;
                 }
+
+                newWidth = Math.max(newWidth, 400);
+                newHeight = Math.max(newHeight, 300);
+
+                setBounds(newX, newY, newWidth, newHeight);
+                revalidate();
+                repaint();
             }
         });
     }
