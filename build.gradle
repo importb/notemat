@@ -16,16 +16,12 @@ repositories {
     }
 }
 
-dependencies {
-    implementation 'com.github.insubstantial:flamingo:7.3'
-    implementation 'com.github.insubstantial:substance:7.3'
-}
 
 application {
     mainClass = 'com.notemat.Main'
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
