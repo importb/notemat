@@ -102,8 +102,7 @@ public class Notemat extends JFrame {
                 NTMFile.saveToFile(this, filePath);
                 savedFilePath = filePath;
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error saving file: " + e.getMessage(),
-                        "Save Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error saving file: " + e.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -123,8 +122,7 @@ public class Notemat extends JFrame {
                 NTMFile.loadFromFile(this, filePath);
                 savedFilePath = filePath;
             } catch (IOException | ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(),
-                        "Load Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -137,8 +135,7 @@ public class Notemat extends JFrame {
             NTMFile.loadFromFile(this, fileToOpen.getAbsolutePath());
             savedFilePath = fileToOpen.getAbsolutePath();
         } catch (IOException | ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(),
-                    "Load Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -185,9 +182,7 @@ public class Notemat extends JFrame {
                     try {
                         NTMFile.saveToFile(Notemat.this, savedFilePath);
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(Notemat.this,
-                                "Error saving file: " + ex.getMessage(),
-                                "Save Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Notemat.this, "Error saving file: " + ex.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -368,8 +363,7 @@ public class Notemat extends JFrame {
             try {
                 Element startPara = doc.getParagraphElement(selectionStart);
                 Element endPara = doc.getParagraphElement(selectionEnd);
-                for (int i = startPara.getStartOffset(); i <= endPara.getStartOffset();
-                     i = doc.getParagraphElement(i).getEndOffset()) {
+                for (int i = startPara.getStartOffset(); i <= endPara.getStartOffset(); i = doc.getParagraphElement(i).getEndOffset()) {
                     Element paragraph = doc.getParagraphElement(i);
                     int paraStart = paragraph.getStartOffset();
                     String paragraphText = doc.getText(paraStart, paragraph.getEndOffset() - paraStart);
@@ -403,7 +397,7 @@ public class Notemat extends JFrame {
         doc = textPane.getStyledDocument();
 
         // Delegate the edits to the undo/redo manager.
-        doc.addUndoableEditListener(e -> undoRedoManager.addEdit(e));
+        doc.addUndoableEditListener(undoRedoManager::addEdit);
 
         doc.addDocumentListener(new DocumentListener() {
             @Override
@@ -505,9 +499,7 @@ public class Notemat extends JFrame {
             @Override
             public boolean canImport(JComponent comp, DataFlavor[] transferFlavors) {
                 for (DataFlavor flavor : transferFlavors) {
-                    if (flavor.equals(DataFlavor.imageFlavor) ||
-                            flavor.equals(DataFlavor.stringFlavor) ||
-                            flavor.equals(StyledTextTransferable.STYLED_TEXT_FLAVOR)) {
+                    if (flavor.equals(DataFlavor.imageFlavor) || flavor.equals(DataFlavor.stringFlavor) || flavor.equals(StyledTextTransferable.STYLED_TEXT_FLAVOR)) {
                         return true;
                     }
                 }
@@ -524,22 +516,19 @@ public class Notemat extends JFrame {
                         Image image = (Image) t.getTransferData(DataFlavor.imageFlavor);
                         insertImage((BufferedImage) image);
                         return true;
-                    } else if (hasStyledTextFlavor(t.getTransferDataFlavors()) ||
-                            hasStringFlavor(t.getTransferDataFlavors())) {
+                    } else if (hasStyledTextFlavor(t.getTransferDataFlavors()) || hasStringFlavor(t.getTransferDataFlavors())) {
                         if (hasSelection) {
                             doc.remove(selStart, selEnd - selStart);
                         }
-                        int insertPosition = selStart;
                         if (hasStyledTextFlavor(t.getTransferDataFlavors())) {
-                            StyledText styledText = (StyledText) t.getTransferData(
-                                    StyledTextTransferable.STYLED_TEXT_FLAVOR);
-                            insertStyledText(styledText, insertPosition);
-                            textPane.setCaretPosition(insertPosition + styledText.text.length());
+                            StyledText styledText = (StyledText) t.getTransferData(StyledTextTransferable.STYLED_TEXT_FLAVOR);
+                            insertStyledText(styledText, selStart);
+                            textPane.setCaretPosition(selStart + styledText.text.length());
                             return true;
                         } else {
                             String text = (String) t.getTransferData(DataFlavor.stringFlavor);
-                            doc.insertString(insertPosition, text, null);
-                            textPane.setCaretPosition(insertPosition + text.length());
+                            doc.insertString(selStart, text, null);
+                            textPane.setCaretPosition(selStart + text.length());
                             return true;
                         }
                     }
@@ -588,8 +577,7 @@ public class Notemat extends JFrame {
         textPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                Component clickedComponent = SwingUtilities.getDeepestComponentAt(
-                        contentLayeredPane, e.getX(), e.getY());
+                Component clickedComponent = SwingUtilities.getDeepestComponentAt(contentLayeredPane, e.getX(), e.getY());
                 if (clickedComponent == textPane) {
                     deselectAllImages();
                 }
@@ -669,10 +657,8 @@ public class Notemat extends JFrame {
      * @param attributes The attributes to apply.
      */
     private void applyStyleToCaret(AttributeSet attributes) {
-        // Use the current input attributes as a base so that any explicit user changes are preserved.
         MutableAttributeSet newAttributes = new SimpleAttributeSet(textPane.getInputAttributes());
         newAttributes.addAttributes(attributes);
-        // Optionally update the fontComboBox based on the new attributes.
         fontComboBox.setSelectedItem(StyleConstants.getFontFamily(newAttributes));
         textPane.setCharacterAttributes(newAttributes, false);
     }
@@ -744,8 +730,7 @@ public class Notemat extends JFrame {
      * to be at least as large as the viewport. If the text content requires more space, its natural preferred size is used.
      */
     private void updateTextPaneSize() {
-        Dimension viewportSize = (scrollPane != null && scrollPane.getViewport() != null)
-                ? scrollPane.getViewport().getExtentSize() : new Dimension(1024, 600);
+        Dimension viewportSize = (scrollPane != null && scrollPane.getViewport() != null) ? scrollPane.getViewport().getExtentSize() : new Dimension(1024, 600);
         try {
             Dimension textPref = textPane.getUI().getPreferredSize(textPane);
             int width = Math.max(viewportSize.width, textPref.width);
@@ -754,7 +739,7 @@ public class Notemat extends JFrame {
             contentLayeredPane.setPreferredSize(new Dimension(width, height));
             contentLayeredPane.revalidate();
         } catch (Exception e) {
-            // Swallow exception if any occur during size update.
+            // happens.
         }
     }
 
@@ -777,7 +762,7 @@ public class Notemat extends JFrame {
             }
             MutableAttributeSet bulletAttributes = new SimpleAttributeSet(attributes);
             Color textColor = StyleConstants.getForeground(attributes);
-            if (textColor == null || textColor.equals(this.textColor)) {
+            if (textColor == null || textColor.equals(Notemat.textColor)) {
                 textColor = (Color) textColorComboBox.getSelectedItem();
             }
             StyleConstants.setForeground(bulletAttributes, textColor);
@@ -810,8 +795,7 @@ public class Notemat extends JFrame {
      */
     private void deselectAllImages() {
         for (Component comp : contentLayeredPane.getComponents()) {
-            if (comp instanceof ImageComponent) {
-                ImageComponent imgComp = (ImageComponent) comp;
+            if (comp instanceof ImageComponent imgComp) {
                 if (imgComp.isSelected()) {
                     imgComp.setSelected(false);
                     imgComp.setBorder(BorderFactory.createEmptyBorder());
