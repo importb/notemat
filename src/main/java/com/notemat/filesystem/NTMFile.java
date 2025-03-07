@@ -1,7 +1,7 @@
 package com.notemat.filesystem;
 
 import com.notemat.components.ImageComponent;
-import com.notemat.main.Notemat;
+import com.notemat.Notemat;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,6 +26,7 @@ public class NTMFile {
 
     // Helper class to store image data in a serializable format
     private static class ImageData implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public final byte[] imageBytes;        // Original image bytes
@@ -91,16 +92,13 @@ public class NTMFile {
         zos.putNextEntry(textEntry);
 
         RTFEditorKit kit = new RTFEditorKit();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             kit.write(baos, notemat.getTextPane().getDocument(), 0,
                     notemat.getTextPane().getDocument().getLength());
             byte[] bytes = baos.toByteArray();
             zos.write(bytes, 0, bytes.length);
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
-        } finally {
-            baos.close();
         }
 
         zos.closeEntry();
@@ -117,8 +115,7 @@ public class NTMFile {
             ArrayList<ImageData> imageDataList = new ArrayList<>();
 
             for (Component comp : components) {
-                if (comp instanceof ImageComponent) {
-                    ImageComponent imgComp = (ImageComponent) comp;
+                if (comp instanceof ImageComponent imgComp) {
 
                     // Get both the original and current (possibly resized) images
                     BufferedImage originalImage = imgComp.getOriginalImage();
