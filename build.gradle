@@ -22,7 +22,7 @@ dependencies {
 }
 
 application {
-    mainClass = 'com.notemat.main.Main'
+    mainClass = 'com.notemat.Main'
 }
 
 tasks.withType(JavaCompile) {
