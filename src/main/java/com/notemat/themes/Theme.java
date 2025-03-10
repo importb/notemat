@@ -1,6 +1,7 @@
 package com.notemat.themes;
 
 import com.notemat.components.ColorIcon;
+import com.notemat.components.MessagePopup;
 import com.notemat.components.RightClickMenu;
 
 import javax.swing.*;
@@ -306,9 +307,57 @@ public class Theme {
                     label.setForeground(TEXT_COLOR);
                 }
 
-                label.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5)); // Ensure no border
+                label.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
                 return label;
             }
         });
+    }
+
+    /**
+     * Applies the custom styling for MessagePopup dialogs.
+     *
+     * @param popup The MessagePopup to style.
+     */
+    public static void applyMessagePopupStyle(MessagePopup popup) {
+        Container content = popup.getContentPane();
+        content.setBackground(MAIN_COLOR_4);
+
+        applyComponentStyle(content);
+
+        if (content instanceof JComponent) {
+            ((JComponent) content).setBorder(BorderFactory.createLineBorder(MAIN_COLOR_4, 2));
+        }
+    }
+
+    /**
+     * Recursively applies theme styling to components.
+     *
+     * @param comp The component to customize.
+     */
+    private static void applyComponentStyle(Component comp) {
+        if (comp instanceof JPanel) {
+            if (comp.getBackground() != MAIN_COLOR_4) {
+                comp.setBackground(MAIN_COLOR_3);
+            }
+        }
+        if (comp instanceof JLabel) {
+            comp.setForeground(TEXT_COLOR);
+            comp.setFont(mainFont);
+        }
+        if (comp instanceof JButton) {
+            comp.setForeground(TEXT_COLOR);
+
+            if (comp.getBackground() != MAIN_COLOR_4) {
+                comp.setBackground(MAIN_COLOR_3);
+            }
+
+            comp.setFont(mainFont);
+            ((JButton) comp).setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+        }
+        if (comp instanceof Container) {
+            for (Component child : ((Container) comp).getComponents()) {
+                applyComponentStyle(child);
+            }
+        }
     }
 }

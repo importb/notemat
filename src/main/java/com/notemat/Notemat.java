@@ -18,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Notemat extends JFrame {
     private final Font mainFont;
@@ -38,6 +40,7 @@ public class Notemat extends JFrame {
     private final UndoRedoManager undoRedoManager;
     private static final Color textColor = new Color(240, 240, 250);
     private boolean userChangedStyle = false;
+    private static final Logger LOGGER = Logger.getLogger(Notemat.class.getName());
 
     public Notemat() {
         this(null);
@@ -53,8 +56,18 @@ public class Notemat extends JFrame {
         setIcon();
 
         // Default font
-        String defaultFont = (Font.decode("Lexend") != null) ? "Lexend" : "Arial";
-        int defaultFontSize = (defaultFont.equals("Lexend")) ? 16 : 14;
+        String[] availableFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+
+        boolean hasLexend = false;
+        for (String fontName : availableFonts) {
+            if ("Lexend".equalsIgnoreCase(fontName)) {
+                hasLexend = true;
+                break;
+            }
+        }
+
+        String defaultFont = hasLexend ? "Lexend" : "Arial";
+        int defaultFontSize = defaultFont.equalsIgnoreCase("Lexend") ? 16 : 14;
         mainFont = new Font(defaultFont, Font.PLAIN, defaultFontSize);
 
         undoRedoManager = new UndoRedoManager();
@@ -367,7 +380,7 @@ public class Notemat extends JFrame {
                     }
                 }
             } catch (BadLocationException ex) {
-                ex.printStackTrace();
+                LOGGER.log(Level.WARNING, ex.getMessage(), ex);
             }
         });
 
@@ -421,7 +434,7 @@ public class Notemat extends JFrame {
                             }
                         }
                     } catch (BadLocationException ex) {
-                        ex.printStackTrace();
+                        LOGGER.log(Level.WARNING, ex.getMessage(), ex);
                     } finally {
                         userChangedStyle = false;
                     }
@@ -525,8 +538,8 @@ public class Notemat extends JFrame {
                             return true;
                         }
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    LOGGER.log(Level.WARNING, ex.getMessage(), ex);
                 }
                 return false;
             }
@@ -787,7 +800,7 @@ public class Notemat extends JFrame {
             StyleConstants.setForeground(bulletAttributes, textColor);
             doc.insertString(position, "• ", bulletAttributes);
         } catch (BadLocationException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, ex.getMessage(), ex);
         }
     }
 

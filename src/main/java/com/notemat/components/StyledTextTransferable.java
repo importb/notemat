@@ -4,6 +4,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.StyledDocument;
@@ -16,6 +18,7 @@ import javax.swing.text.StyledDocument;
 public class StyledTextTransferable implements Transferable {
     public static final DataFlavor STYLED_TEXT_FLAVOR = new DataFlavor(StyledText.class, "Styled Text");
     private StyledText styledText;
+    private static final Logger LOGGER = Logger.getLogger(StyledTextTransferable.class.getName());
 
     /**
      * Constructs a StyledTextTransferable object from the specified
@@ -35,8 +38,8 @@ public class StyledTextTransferable implements Transferable {
             }
 
             this.styledText = new StyledText(text, attributes);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, ex.getMessage(), ex);
         }
     }
 
@@ -51,7 +54,7 @@ public class StyledTextTransferable implements Transferable {
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (STYLED_TEXT_FLAVOR.equals(flavor)) {
             return styledText;
         } else if (DataFlavor.stringFlavor.equals(flavor)) {

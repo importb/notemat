@@ -7,8 +7,11 @@ import javax.swing.text.AttributeSet;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.net.URI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Hyperlink {
+    private static final Logger LOGGER = Logger.getLogger(Hyperlink.class.getName());
 
     /**
      * Checks if the clicked position in the JTextPane has a hyperlink attribute.
@@ -25,7 +28,7 @@ public class Hyperlink {
             AttributeSet as = elem.getAttributes();
             String url = (String) as.getAttribute("HYPERLINK");
             if (url != null) {
-                openURL(url, textPane);
+                openURL(url);
             }
         }
     }
@@ -35,9 +38,8 @@ public class Hyperlink {
      * On Linux (or when not supported), falls back to xdg-open.
      *
      * @param url    The URL to open.
-     * @param parent The parent component (for error dialogs).
      */
-    private static void openURL(String url, Component parent) {
+    private static void openURL(String url) {
         // try: Desktop API
         if (Desktop.isDesktopSupported() &&
                 Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
@@ -45,14 +47,15 @@ public class Hyperlink {
                 Desktop.getDesktop().browse(new URI(url));
                 return;
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOGGER.log(Level.WARNING, "Error using Desktop browse", ex);
             }
         }
         // fallback: using xdg-open
         try {
             Runtime.getRuntime().exec(new String[]{"xdg-open", url});
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "Unable to open URL using xdg-open", ex);
+            MessagePopup.showMessage("Error", "Browsing is not supported on your system.");
         }
     }
 }
