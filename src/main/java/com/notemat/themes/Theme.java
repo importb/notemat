@@ -1,6 +1,7 @@
 package com.notemat.themes;
 
 import com.notemat.components.ColorIcon;
+import com.notemat.components.RightClickMenu;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -13,6 +14,12 @@ public class Theme {
     public static final Color MAIN_COLOR_3 = new Color(20, 20, 30);
     public static final Color MAIN_COLOR_4 = new Color(15, 15, 20);
     public static final Color TEXT_COLOR = new Color(240, 240, 250);
+
+    // Font
+    // todo: make every function use this.
+    private static final String defaultFont = (Font.decode("Lexend") != null) ? "Lexend" : "Arial";
+    private static final int defaultFontSize = (defaultFont.equals("Lexend")) ? 16 : 14;
+    public static final Font mainFont = new Font(defaultFont, Font.PLAIN, defaultFontSize);
 
     public static void applyMenuBarStyle(JMenuBar menuBar, Font font) {
         menuBar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -44,6 +51,22 @@ public class Theme {
         }
     }
 
+
+    public static void applyPopUpStyle(RightClickMenu menu) {
+        menu.setBackground(MAIN_COLOR_2);
+        menu.setForeground(TEXT_COLOR);
+        menu.setBorder(BorderFactory.createLineBorder(MAIN_COLOR_3, 2));
+
+        for (Component comp : menu.getComponents()) {
+            if (comp instanceof JMenuItem menuItem) {
+                menuItem.setBackground(MAIN_COLOR_2);
+                menuItem.setForeground(TEXT_COLOR);
+                menuItem.setFont(mainFont);
+                menuItem.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+                menuItem.setFocusPainted(false);
+            }
+        }
+    }
 
 
     public static void applyScrollPaneStyle(JScrollPane scrollPane, Font font) {

@@ -1,9 +1,6 @@
 package com.notemat;
 
-import com.notemat.components.CustomMenuBar;
-import com.notemat.components.ImageComponent;
-import com.notemat.components.StyledText;
-import com.notemat.components.StyledTextTransferable;
+import com.notemat.components.*;
 import com.notemat.filesystem.NTMFile;
 import com.notemat.themes.Theme;
 import com.notemat.utils.CustomWindowResizing;
@@ -583,6 +580,9 @@ public class Notemat extends JFrame {
                 }
             }
         });
+
+        // Right click popup menu
+        RightClickMenu.attachToComponent(textPane, textPane);
     }
 
     /**
