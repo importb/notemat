@@ -17,6 +17,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class Notemat extends JFrame {
     private final Font mainFont;
@@ -36,11 +37,6 @@ public class Notemat extends JFrame {
     private JComboBox<Color> textColorComboBox;
     private final UndoRedoManager undoRedoManager;
     private static final Color textColor = new Color(240, 240, 250);
-    private static final Color textColorRed = new Color(235, 64, 52);
-    private static final Color textColorOrange = new Color(235, 156, 52);
-    private static final Color textColorGreen = new Color(113, 235, 52);
-    private static final Color textColorBlue = new Color(52, 134, 235);
-    private static final Color textColorPink = new Color(235, 52, 217);
     private boolean userChangedStyle = false;
 
     public Notemat() {
@@ -265,11 +261,11 @@ public class Notemat extends JFrame {
             int end = textPane.getSelectionEnd();
             if (start != end) {
                 SimpleAttributeSet attributes = new SimpleAttributeSet();
-                StyleConstants.setFontSize(attributes, selectedSize);
+                StyleConstants.setFontSize(attributes, Objects.requireNonNullElse(selectedSize, 12));
                 doc.setCharacterAttributes(start, end - start, attributes, false);
             } else {
                 SimpleAttributeSet inputAttributes = new SimpleAttributeSet();
-                StyleConstants.setFontSize(inputAttributes, selectedSize);
+                StyleConstants.setFontSize(inputAttributes, Objects.requireNonNullElse(selectedSize, 12));
                 applyStyleToCaret(inputAttributes);
             }
         });
@@ -280,7 +276,7 @@ public class Notemat extends JFrame {
         // ----------------------------
         // Text color ComboBox
         // ----------------------------
-        Color[] colors = {textColor, textColorRed, textColorOrange, textColorGreen, textColorBlue, textColorPink};
+        Color[] colors = {textColor, Theme.TEXT_COLOR_RED, Theme.TEXT_COLOR_ORANGE, Theme.TEXT_COLOR_GREEN, Theme.TEXT_COLOR_BLUE, Theme.TEXT_COLOR_PINK};
         textColorComboBox = new JComboBox<>(colors);
         Theme.applyTextColorComboBoxStyle(textColorComboBox, mainFont);
 
@@ -574,12 +570,35 @@ public class Notemat extends JFrame {
         textPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                Hyperlink.processHyperlinkClick(textPane, e);
+
                 Component clickedComponent = SwingUtilities.getDeepestComponentAt(contentLayeredPane, e.getX(), e.getY());
                 if (clickedComponent == textPane) {
                     deselectAllImages();
                 }
             }
         });
+
+        textPane.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                int pos = textPane.viewToModel2D(e.getPoint());
+                if (pos >= 0) {
+                    StyledDocument doc = textPane.getStyledDocument();
+                    Element elem = doc.getCharacterElement(pos);
+                    AttributeSet as = elem.getAttributes();
+
+                    // If hyperlink change cursor to hand.
+                    if (as.getAttribute("HYPERLINK") != null) {
+                        textPane.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                        return;
+                    }
+                }
+
+                textPane.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+            }
+        });
+
 
         // Right click popup menu
         RightClickMenu.attachToComponent(textPane, textPane);
@@ -811,7 +830,7 @@ public class Notemat extends JFrame {
     private void setIcon() {
         try {
             setIconImage(null);
-            ImageIcon icon = new ImageIcon(getClass().getResource("/images/notemat.png"));
+            ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource("/images/notemat.png")));
             setIconImage(icon.getImage());
         } catch (Exception e) {
             System.err.println("Error loading icon: " + e.getMessage());

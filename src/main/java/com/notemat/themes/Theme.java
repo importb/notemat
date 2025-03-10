@@ -15,6 +15,12 @@ public class Theme {
     public static final Color MAIN_COLOR_4 = new Color(15, 15, 20);
     public static final Color TEXT_COLOR = new Color(240, 240, 250);
 
+    public static final Color TEXT_COLOR_RED = new Color(235, 64, 52);
+    public static final Color TEXT_COLOR_ORANGE = new Color(235, 156, 52);
+    public static final Color TEXT_COLOR_GREEN = new Color(113, 235, 52);
+    public static final Color TEXT_COLOR_BLUE = new Color(52, 134, 235);
+    public static final Color TEXT_COLOR_PINK = new Color(235, 52, 217);
+
     // Font
     // todo: make every function use this.
     private static final String defaultFont = (Font.decode("Lexend") != null) ? "Lexend" : "Arial";
@@ -159,11 +165,11 @@ public class Theme {
             }
 
             private String colorName(Color color) {
-                if (color.equals(new Color(235, 64, 52))) return "Red";
-                if (color.equals(new Color(113, 235, 52))) return "Green";
-                if (color.equals(new Color(52, 134, 235))) return "Blue";
-                if (color.equals(new Color(235, 156, 52))) return "Orange";
-                if (color.equals(new Color(235, 52, 217))) return "Pink";
+                if (color.equals(TEXT_COLOR_RED)) return "Red";
+                if (color.equals(TEXT_COLOR_GREEN)) return "Green";
+                if (color.equals(TEXT_COLOR_BLUE)) return "Blue";
+                if (color.equals(TEXT_COLOR_ORANGE)) return "Orange";
+                if (color.equals(TEXT_COLOR_PINK)) return "Pink";
                 return "White";
             }
         });
