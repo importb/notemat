@@ -34,7 +34,7 @@ public class ColorIcon implements Icon {
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         g.setColor(color);
-        g.fillRect(x, y, width, height);
+        g.fillRect(x + 5, y, width, height);
     }
 
     @Override

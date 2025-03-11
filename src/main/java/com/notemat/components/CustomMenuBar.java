@@ -6,10 +6,7 @@ import com.notemat.utils.UndoRedoManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.*;
 
 public class CustomMenuBar extends JMenuBar {
     private final Notemat notematFrame;
@@ -70,10 +67,12 @@ public class CustomMenuBar extends JMenuBar {
             }
         };
 
+
         Action closeAction = new AbstractAction("x") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor((Component) e.getSource());
+                topFrame.dispatchEvent(new WindowEvent(topFrame, WindowEvent.WINDOW_CLOSING));
             }
         };
 

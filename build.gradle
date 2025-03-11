@@ -16,7 +16,6 @@ repositories {
     }
 }
 
-
 application {
     mainClass = 'com.notemat.Main'
 }

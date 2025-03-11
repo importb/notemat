@@ -17,7 +17,7 @@ public class Theme {
     public static final Color TEXT_COLOR = new Color(240, 240, 250);
 
     public static final Color TEXT_COLOR_RED = new Color(235, 64, 52);
-    public static final Color TEXT_COLOR_ORANGE = new Color(235, 156, 52);
+    public static final Color TEXT_COLOR_PEACH = new Color(255, 203, 164);
     public static final Color TEXT_COLOR_GREEN = new Color(113, 235, 52);
     public static final Color TEXT_COLOR_BLUE = new Color(52, 134, 235);
     public static final Color TEXT_COLOR_PINK = new Color(235, 52, 217);
@@ -26,7 +26,7 @@ public class Theme {
     // todo: make every function use this.
     private static final String defaultFont = (Font.decode("Lexend") != null) ? "Lexend" : "Arial";
     private static final int defaultFontSize = (defaultFont.equals("Lexend")) ? 16 : 14;
-    public static final Font mainFont = new Font(defaultFont, Font.PLAIN, defaultFontSize);
+    public static final Font MAIN_FONT = new Font(defaultFont, Font.PLAIN, defaultFontSize);
 
     public static void applyMenuBarStyle(JMenuBar menuBar, Font font) {
         menuBar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -68,7 +68,7 @@ public class Theme {
             if (comp instanceof JMenuItem menuItem) {
                 menuItem.setBackground(MAIN_COLOR_2);
                 menuItem.setForeground(TEXT_COLOR);
-                menuItem.setFont(mainFont);
+                menuItem.setFont(MAIN_FONT);
                 menuItem.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
                 menuItem.setFocusPainted(false);
             }
@@ -166,12 +166,12 @@ public class Theme {
             }
 
             private String colorName(Color color) {
-                if (color.equals(TEXT_COLOR_RED)) return "Red";
-                if (color.equals(TEXT_COLOR_GREEN)) return "Green";
-                if (color.equals(TEXT_COLOR_BLUE)) return "Blue";
-                if (color.equals(TEXT_COLOR_ORANGE)) return "Orange";
-                if (color.equals(TEXT_COLOR_PINK)) return "Pink";
-                return "White";
+                if (color.equals(TEXT_COLOR_RED)) return "  Red";
+                if (color.equals(TEXT_COLOR_GREEN)) return "  Green";
+                if (color.equals(TEXT_COLOR_BLUE)) return "  Blue";
+                if (color.equals(TEXT_COLOR_PEACH)) return "  Peach";
+                if (color.equals(TEXT_COLOR_PINK)) return "  Pink";
+                return "  White";
             }
         });
     }
@@ -342,7 +342,7 @@ public class Theme {
         }
         if (comp instanceof JLabel) {
             comp.setForeground(TEXT_COLOR);
-            comp.setFont(mainFont);
+            comp.setFont(MAIN_FONT);
         }
         if (comp instanceof JButton) {
             comp.setForeground(TEXT_COLOR);
@@ -351,7 +351,7 @@ public class Theme {
                 comp.setBackground(MAIN_COLOR_3);
             }
 
-            comp.setFont(mainFont);
+            comp.setFont(MAIN_FONT);
             ((JButton) comp).setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
         }
         if (comp instanceof Container) {

@@ -38,6 +38,7 @@ public class Notemat extends JFrame {
     private JToggleButton underlineButton;
     private JComboBox<Color> textColorComboBox;
     private final UndoRedoManager undoRedoManager;
+    private boolean changedSinceLastSave = false;
     private static final Color textColor = new Color(240, 240, 250);
     private boolean userChangedStyle = false;
     private static final Logger LOGGER = Logger.getLogger(Notemat.class.getName());
@@ -106,9 +107,14 @@ public class Notemat extends JFrame {
             }
             try {
                 NTMFile.saveToFile(this, filePath);
+                changedSinceLastSave = false;
                 savedFilePath = filePath;
             } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Error saving file: " + e.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
+                MessagePopup.showMessage(
+                        Notemat.this,
+                        "Error",
+                        "Error saving file: " + e.getMessage()
+                );
             }
         }
     }
@@ -128,7 +134,11 @@ public class Notemat extends JFrame {
                 NTMFile.loadFromFile(this, filePath);
                 savedFilePath = filePath;
             } catch (IOException | ClassNotFoundException e) {
-                JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
+                MessagePopup.showMessage(
+                        Notemat.this,
+                        "Error",
+                        "Error loading file: " + e.getMessage()
+                );
             }
         }
     }
@@ -141,7 +151,11 @@ public class Notemat extends JFrame {
             NTMFile.loadFromFile(this, fileToOpen.getAbsolutePath());
             savedFilePath = fileToOpen.getAbsolutePath();
         } catch (IOException | ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Error loading file: " + e.getMessage(), "Load Error", JOptionPane.ERROR_MESSAGE);
+            MessagePopup.showMessage(
+                    Notemat.this,
+                    "Error",
+                    "Error loading file: " + e.getMessage()
+            );
         }
     }
 
@@ -187,8 +201,13 @@ public class Notemat extends JFrame {
                 } else {
                     try {
                         NTMFile.saveToFile(Notemat.this, savedFilePath);
+                        changedSinceLastSave = false;
                     } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(Notemat.this, "Error saving file: " + ex.getMessage(), "Save Error", JOptionPane.ERROR_MESSAGE);
+                        MessagePopup.showMessage(
+                                Notemat.this,
+                                "Error",
+                                "Error saving file: " + ex.getMessage()
+                        );
                     }
                 }
             }
@@ -289,7 +308,7 @@ public class Notemat extends JFrame {
         // ----------------------------
         // Text color ComboBox
         // ----------------------------
-        Color[] colors = {textColor, Theme.TEXT_COLOR_RED, Theme.TEXT_COLOR_ORANGE, Theme.TEXT_COLOR_GREEN, Theme.TEXT_COLOR_BLUE, Theme.TEXT_COLOR_PINK};
+        Color[] colors = {textColor, Theme.TEXT_COLOR_RED, Theme.TEXT_COLOR_PEACH, Theme.TEXT_COLOR_GREEN, Theme.TEXT_COLOR_BLUE, Theme.TEXT_COLOR_PINK};
         textColorComboBox = new JComboBox<>(colors);
         Theme.applyTextColorComboBoxStyle(textColorComboBox, mainFont);
 
@@ -408,6 +427,8 @@ public class Notemat extends JFrame {
         doc.addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
+                changedSinceLastSave = true;
+
                 if (!updatingButtons) {
                     updateButtonStates();
                 }
@@ -443,6 +464,8 @@ public class Notemat extends JFrame {
 
             @Override
             public void removeUpdate(DocumentEvent e) {
+                changedSinceLastSave = true;
+
                 if (!updatingButtons) {
                     updateButtonStates();
                 }
@@ -450,6 +473,8 @@ public class Notemat extends JFrame {
 
             @Override
             public void changedUpdate(DocumentEvent e) {
+                changedSinceLastSave = true;
+
                 if (!updatingButtons) {
                     updateButtonStates();
                 }
@@ -677,6 +702,45 @@ public class Notemat extends JFrame {
         mainPanel.add(stylePanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         setContentPane(mainPanel);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (changedSinceLastSave) {
+                    JButton button1 = new JButton("Exit");
+                    button1.setFocusPainted(false);
+                    button1.addActionListener(e1 -> System.exit(0));
+
+                    JButton button2 = new JButton("Save");
+                    button2.setFocusPainted(false);
+                    if (savedFilePath == null) {
+                        button2.addActionListener(e1 -> {
+                            saveFile();
+                            System.exit(0);
+                        });
+                    } else {
+                        button2.addActionListener(e1 -> {
+                            try {
+                                NTMFile.saveToFile(Notemat.this, savedFilePath);
+                                System.exit(0);
+                            } catch (IOException ex) {
+                                MessagePopup.showMessage("Error", "Error saving file" + ex.getMessage());
+                            }
+                        });
+                    }
+
+                    MessagePopup.showMessage(
+                            Notemat.this,
+                            "Unsaved Changes",
+                            "You have unsaved changes. Are you sure you want to exit?",
+                            button1,
+                            button2
+                    );
+                } else {
+                    System.exit(0);
+                }
+            }
+        });
     }
 
     /**
