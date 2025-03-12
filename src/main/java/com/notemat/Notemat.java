@@ -50,7 +50,7 @@ public class Notemat extends JFrame {
     public Notemat(File fileToOpen) {
         // Init
         setTitle("Notemat");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setSize(1024, 600);
         setLocationRelativeTo(null);
         setUndecorated(true);
@@ -88,6 +88,8 @@ public class Notemat extends JFrame {
         if (fileToOpen != null) {
             loadFile(fileToOpen);
         }
+
+
     }
 
     /**
