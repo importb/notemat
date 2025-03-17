@@ -1,0 +1,231 @@
+/* theme.css */
+
+/* Color reference for the theme:
+   MAIN_COLOR_1:        #202032   (TextArea inner background)
+   MAIN_COLOR_2:        #181824   (StyleBar background)
+   MAIN_COLOR_3:        #14141E   (StyleBar control default background)
+   MAIN_COLOR_4:        #0F0F14   (StyleBar controls hover/selected background)
+   TEXT_COLOR:          #F0F0FA   (Text color)
+   SELECTION_COLOR:     #7C7CE6
+   HOVER_COLOR:         #BDBDFF
+*/
+
+.root {
+    -fx-background-color: #181824;
+    -fx-border-color: #0F0F14;
+    -fx-border-width: 2px;
+}
+
+.styled-text-area {
+    -fx-background-color: #202032;
+    -fx-padding: 10;
+}
+
+.styled-text-area.resize-zone {
+    -fx-cursor: inherit;
+}
+
+.styled-text-area .caret {
+    -fx-stroke: white;
+}
+
+
+.stylebar {
+    -fx-pref-height: 38px;
+    -fx-background-color: #181824;
+}
+
+/* ------------------------- */
+/* Stylebar ComboBox styling */
+/* ------------------------- */
+.stylebar-combobox .list-cell {
+    -fx-background: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: #F0F0FA;
+    -fx-padding: 3 0 2 7;
+    -fx-cell-size: 1.66667em;
+    -fx-pref-height: 30px;
+}
+
+.stylebar-combobox {
+    -fx-background-color: #14141E;
+    -fx-background-radius: 2;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-padding: 0;
+    -fx-text-fill: #F0F0FA;
+    -fx-font: 16px "Lexend";
+}
+
+.stylebar-combobox:hover {
+    -fx-background-color: #BDBDFF;
+}
+
+.stylebar-combobox .arrow {
+    -fx-opacity: 0;
+}
+
+.stylebar-combobox .list-view {
+    -fx-background-color: #181824;
+    -fx-background-insets: 0, 1;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 8, 0.0, 0, 0);
+}
+
+.stylebar-combobox .list-view .list-cell:filled:selected, .stylebar-combobox .list-view .list-cell:filled:selected:hover {
+    -fx-background: #7C7CE6;
+    -fx-background-radius: 2;
+    -fx-background-color: #7C7CE6;
+    -fx-text-fill: #F0F0FA;
+}
+
+.stylebar-combobox .list-view .list-cell:filled:hover {
+    -fx-background-color: #BDBDFF;
+    -fx-background-radius: 2;
+    -fx-text-fill: -fx-text-inner-color;
+}
+
+.stylebar-combobox .scroll-bar {
+    -fx-background-color: #181824;
+}
+
+.stylebar-combobox .scroll-bar:vertical .thumb {
+    -fx-background-color: #14141E;
+}
+
+.stylebar-combobox .scroll-bar .increment-arrow {
+    -fx-background-color: transparent;
+    -fx-opacity: 0;
+    -fx-shape: " ";
+    -fx-padding: 0 0 0 0;
+}
+
+.stylebar-combobox .scroll-bar .decrement-arrow {
+    -fx-background-color: transparent;
+    -fx-opacity: 0;
+    -fx-shape: " ";
+    -fx-padding: 0 0 0 0;
+}
+
+.font-combobox {
+    -fx-pref-width: 150px;
+}
+
+/* --------------------------- */
+/* Stylebar Toggle btn styling */
+/* --------------------------- */
+.stylebar-togglebutton {
+    -fx-background-color: #14141E;
+    -fx-text-fill: #F0F0FA;
+    -fx-font: 14px "Lexend";
+    -fx-pref-height: 30px;
+    -fx-border-radius: 2px;
+    -fx-border-color: transparent;
+}
+
+.stylebar-togglebutton:hover {
+    -fx-background-color: #BDBDFF;
+}
+
+.stylebar-togglebutton:selected {
+    -fx-background-color: #7C7CE6;
+    -fx-border-color: transparent;
+}
+
+/* ------------------------- */
+/* Stylebar Colorbox styling */
+/* ------------------------- */
+.stylebar-colorpicker {
+    -fx-pref-width: 165px;
+}
+
+.stylebar-colorpicker .label {
+    -fx-text-fill: #F0F0FA;
+}
+
+.stylebar-colorpicker .color-palette {
+    -fx-background-color: #181824;
+    -fx-padding: 5px;
+    -fx-border-radius: 2px;
+}
+
+.stylebar-colorpicker .separator {
+    -fx-opacity: 0;
+}
+
+.stylebar-colorpicker .color-palette .hyperlink {
+    -fx-text-fill: #F0F0FA;
+}
+
+/* --------------- */
+/* Toolbar styling */
+/* --------------- */
+.toolbar {
+    -fx-pref-height: 38px;
+    -fx-background-color: #0F0F14;
+}
+
+.toolbar .button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #F0F0FA;
+    -fx-font: 14px "Lexend";
+    -fx-border-color: transparent;
+    -fx-border-radius: 2px;
+}
+
+.toolbar .button:hover {
+    -fx-text-fill: #BDBDFF;
+}
+
+.toolbar .label {
+    -fx-text-fill: #F0F0FA;
+    -fx-padding: 0 6 0 6;
+}
+
+.toolbar .label:hover {
+    -fx-text-fill: #BDBDFF;
+}
+
+.toolbar .hbox {
+    -fx-background-color: transparent;
+}
+
+.toolbar .menu-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.toolbar .menu {
+    -fx-pref-height: 38px;
+    -fx-font: 14px "Lexend";
+    -fx-background-color: transparent;
+}
+
+.toolbar .context-menu {
+    -fx-background-color: #181824;
+}
+
+.popup {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: null;
+}
+
+.toolbar .menu-item {
+    -fx-background-color: #181824;
+}
+
+.menu-item .label {
+    -fx-text-fill: #F0F0FA;
+}
+
+/* -------------------- */
+/* Context menu styling */
+/* -------------------- */
+.context-menu {
+    -fx-font: 14px "Lexend";
+    -fx-background-color: #181824;
+}
+
+.context-menu .menu-item:focused{
+    -fx-background-color: #BDBDFF;
+}

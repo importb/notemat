@@ -1,35 +1,56 @@
 plugins {
-    id 'java'
     id 'application'
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
-group 'com.notemat'
-version '1.0-SNAPSHOT'
+group = 'com.notemat'
+version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://maven.icm.edu.pl/artifactory/repo/"
-    }
-    maven {
-        url "https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/"
-    }
+}
+
+def osName = System.getProperty('os.name').toLowerCase()
+def javafxPlatform = 'linux'
+if (osName.contains('win')) {
+    javafxPlatform = 'win'
+} else if (osName.contains('mac')) {
+    javafxPlatform = 'mac'
+}
+
+dependencies {
+    implementation "org.openjfx:javafx-base:20.0.2:${javafxPlatform}"
+    implementation "org.openjfx:javafx-graphics:20.0.2:${javafxPlatform}"
+    implementation "org.openjfx:javafx-controls:20.0.2:${javafxPlatform}"
+    implementation "org.openjfx:javafx-fxml:20.0.2:${javafxPlatform}"
+    implementation "org.openjfx:javafx-swing:20.0.2:${javafxPlatform}"
+    implementation 'org.fxmisc.richtext:richtextfx:0.11.0'
 }
 
 application {
-    mainClass = 'com.notemat.Main'
+    mainClass = 'com.notemat.Launcher'
 }
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
+test {
+    useJUnitPlatform()
 }
 
-jar {
+run {
+    jvmArgs = [
+            '--module-path',
+            configurations.runtimeClasspath.asPath,
+            '--add-modules',
+            'javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.swing'
+    ]
+}
+
+shadowJar {
+    archiveBaseName.set('notemat')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+    mergeServiceFiles()
     manifest {
-        attributes 'Main-Class': 'com.notemat.Main'
+        attributes 'Main-Class': 'com.notemat.Launcher'
     }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

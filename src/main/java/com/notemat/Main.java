@@ -1,17 +1,17 @@
 package com.notemat;
 
-import javax.swing.*;
-import java.io.File;
+import com.notemat.Components.EditorWindow;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application {
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            if (args.length > 0) {
-                File fileToOpen = new File(args[0]);
-                new Notemat(fileToOpen);
-            } else {
-                new Notemat();
-            }
-        });
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        EditorWindow editorWindow = new EditorWindow();
+        editorWindow.show();
     }
 }
