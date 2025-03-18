@@ -1,11 +1,16 @@
 package com.notemat.Utils;
 
 import com.notemat.Components.EditorWindow;
+import com.notemat.Components.ImageComponent;
 import com.notemat.Components.StyleBar;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
 import org.fxmisc.richtext.InlineCssTextArea;
+
 
 public class KeyBindings {
 
@@ -16,7 +21,7 @@ public class KeyBindings {
      * @param textArea the InlineCssTextArea to perform copy/paste and style actions.
      * @param styleBar the StyleBar which manages the font styling controls.
      */
-    public KeyBindings(EditorWindow editor, Scene scene, InlineCssTextArea textArea, StyleBar styleBar) {
+    public KeyBindings(EditorWindow editor, Scene scene, InlineCssTextArea textArea, StyleBar styleBar, Pane imageLayer) {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.isControlDown()) {
                 KeyCode code = event.getCode();
@@ -43,12 +48,26 @@ public class KeyBindings {
                         break;
                     case V:
                         event.consume();
-                        textArea.paste();
+                        pasteTextOrImage(textArea, imageLayer);
                         break;
                     default:
                         break;
                 }
             }
         });
+    }
+
+    private void pasteTextOrImage(InlineCssTextArea textArea, Pane imageLayer) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        if (clipboard.hasImage()) {
+            Image clipboardImage = clipboard.getImage();
+            ImageComponent imageComponent = new ImageComponent(clipboardImage);
+            imageComponent.setManaged(false);
+            imageComponent.setLayoutX(10);
+            imageComponent.setLayoutY(10);
+            imageLayer.getChildren().add(imageComponent);
+        } else {
+            textArea.paste();
+        }
     }
 }

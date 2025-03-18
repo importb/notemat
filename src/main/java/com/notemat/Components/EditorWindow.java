@@ -13,6 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -86,7 +87,7 @@ public class EditorWindow extends Stage {
         scene.getStylesheets().add(css);
 
         new WindowResizing(this);
-        new KeyBindings(this, scene, richTextArea, styleBar);
+        new KeyBindings(this, scene, richTextArea, styleBar, imageLayer);
 
         richTextArea.textProperty().addListener((obs, oldText, newText) -> {
             NTMFile.markChanged(toolBar);
@@ -99,22 +100,6 @@ public class EditorWindow extends Stage {
         // Image scrolling
         richTextArea.estimatedScrollYProperty().addListener((obs, oldVal, newVal) -> {
             imageLayer.setTranslateY(-newVal);
-        });
-
-        // Paste handler.
-        richTextArea.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-            if (e.isControlDown() && e.getCode() == KeyCode.V) {
-                Clipboard clipboard = Clipboard.getSystemClipboard();
-                if (clipboard.hasImage()) {
-                    Image clipboardImage = clipboard.getImage();
-                    ImageComponent imageComponent = new ImageComponent(clipboardImage);
-                    imageComponent.setManaged(false);
-                    imageComponent.setLayoutX(10);
-                    imageComponent.setLayoutY(10);
-                    imageLayer.getChildren().add(imageComponent);
-                    e.consume();
-                }
-            }
         });
     }
 
@@ -194,4 +179,6 @@ public class EditorWindow extends Stage {
         }
         return null;
     }
+
+
 }
