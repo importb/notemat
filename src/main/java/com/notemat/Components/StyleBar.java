@@ -11,6 +11,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.InlineCssTextArea;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 
 public class StyleBar extends HBox {
     private final ComboBox<String> fontCombo;
@@ -152,28 +154,55 @@ public class StyleBar extends HBox {
         int selectionStart = textArea.getSelection().getStart();
         int selectionEnd = textArea.getSelection().getEnd();
 
-        // No text selected - just update the caret style
-        if (selectionStart == selectionEnd) {
-            String newStyle = getStyleBarStyle();
-            textArea.setStyle(selectionStart, selectionStart, newStyle);
+        if (selectionStart >= selectionEnd) {
+            String currentStyle = textArea.getStyleAtPosition(selectionStart);
+            if (currentStyle == null || currentStyle.trim().isEmpty()) {
+                currentStyle = getStyleBarStyle();
+            }
+            String updatedStyle = updateSpecificProperty(currentStyle, property);
+            textArea.setStyle(selectionStart, selectionStart + 1, updatedStyle);
             return;
         }
 
-        // Text is selected - process each character position individually
-        for (int pos = selectionStart; pos < selectionEnd; pos++) {
-            String currentStyle = textArea.getStyleAtPosition(pos);
+        StyleSpans<String> currentSpans = textArea.getStyleSpans(0, textArea.getLength());
+        StyleSpansBuilder<String> spansBuilder = new StyleSpansBuilder<>();
+        int pos = 0;
 
-            // If no style exists at this position, use the full style bar style
-            if (currentStyle == null || currentStyle.trim().isEmpty()) {
-                textArea.setStyle(pos, pos + 1, getStyleBarStyle());
-                continue;
+        for (org.fxmisc.richtext.model.StyleSpan<String> span : currentSpans) {
+            int spanLength = span.getLength();
+            int spanStart = pos;
+            int spanEnd = pos + spanLength;
+
+            if (spanEnd <= selectionStart || spanStart >= selectionEnd) {
+                spansBuilder.add(span.getStyle(), spanLength);
+            } else {
+                if (spanStart < selectionStart) {
+                    int unaffectedLength = selectionStart - spanStart;
+                    spansBuilder.add(span.getStyle(), unaffectedLength);
+                }
+
+                int modifiedStart = Math.max(spanStart, selectionStart);
+                int modifiedEnd = Math.min(spanEnd, selectionEnd);
+                int modifiedLength = modifiedEnd - modifiedStart;
+                String effectiveStyle = span.getStyle();
+                if (effectiveStyle == null || effectiveStyle.trim().isEmpty()) {
+                    effectiveStyle = getStyleBarStyle();
+                }
+                String modifiedStyle = updateSpecificProperty(effectiveStyle, property);
+                spansBuilder.add(modifiedStyle, modifiedLength);
+
+                if (spanEnd > selectionEnd) {
+                    int unaffectedLength = spanEnd - selectionEnd;
+                    spansBuilder.add(span.getStyle(), unaffectedLength);
+                }
             }
 
-            // Otherwise, just update the specific property while preserving others
-            String updatedStyle = updateSpecificProperty(currentStyle, property);
-            textArea.setStyle(pos, pos + 1, updatedStyle);
+            pos += spanLength;
         }
+
+        textArea.setStyleSpans(0, spansBuilder.create());
     }
+
 
     /**
      * Updates a specific property in an existing style string
