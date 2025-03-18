@@ -1,13 +1,13 @@
 package com.notemat.Components;
 
 import com.notemat.Filesystem.NTMFile;
+import com.notemat.Filesystem.TXTFile;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -34,9 +34,30 @@ public class ToolBar extends BorderPane {
         MenuItem saveFile = new MenuItem("Save");
         MenuItem saveAsFile = new MenuItem("Save As");
         MenuItem exitItem = new MenuItem("Exit");
-
         enableLoadingSaving(saveFile, saveAsFile, openFile);
-        fileMenu.getItems().addAll(openFile, saveFile, saveAsFile, new SeparatorMenuItem(), exitItem);
+
+        // Create Import submenu.
+        Menu importMenu = new Menu("Import");
+        MenuItem importTxt = new MenuItem("Import .txt");
+        importMenu.getItems().addAll(importTxt);
+
+        // Create Export submenu.
+        Menu exportMenu = new Menu("Export");
+        MenuItem exportTxt = new MenuItem("Export to .txt");
+        exportMenu.getItems().addAll(exportTxt);
+
+        fileMenu.getItems().addAll(
+                openFile,
+                saveFile,
+                saveAsFile,
+                new SeparatorMenuItem(),
+                importMenu,
+                exportMenu,
+                new SeparatorMenuItem(),
+                exitItem
+        );
+
+        enableAlternativeLoadingSaving(importTxt, exportTxt);
 
         // Create "Edit" menu.
         Menu editMenu = new Menu("Edit");
@@ -107,15 +128,40 @@ public class ToolBar extends BorderPane {
 
     private void enableLoadingSaving(MenuItem saveFile, MenuItem saveAsFile, MenuItem openFile) {
         saveFile.setOnAction(event -> {
-            editor.saveFile();
+            editor.saveFile("ntm");
         });
 
         saveAsFile.setOnAction(event -> {
-            editor.saveFile(true);
+            editor.saveFile("ntm", true);
         });
 
         openFile.setOnAction(event -> {
-            editor.openFile();
+            editor.openFile("ntm");
+        });
+    }
+
+    private void enableAlternativeLoadingSaving(MenuItem importTxt, MenuItem exportTxt) {
+        importTxt.setOnAction(event -> {
+            String filePath = editor.openFileGetPath("txt");
+
+            if (filePath != null) {
+                try {
+                    TXTFile.importFromFile(editor, filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        exportTxt.setOnAction(event -> {
+            String filePath = editor.saveFileGetPath("txt");
+
+            if (filePath != null) {
+                try {
+                    TXTFile.saveToFile(editor, filePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
     }
 

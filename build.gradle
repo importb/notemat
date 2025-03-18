@@ -26,6 +26,7 @@ dependencies {
     implementation "org.openjfx:javafx-fxml:20.0.2:${javafxPlatform}"
     implementation "org.openjfx:javafx-swing:20.0.2:${javafxPlatform}"
     implementation 'org.fxmisc.richtext:richtextfx:0.11.0'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.27'
 }
 
 application {

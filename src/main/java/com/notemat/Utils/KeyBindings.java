@@ -35,7 +35,7 @@ public class KeyBindings {
                         break;
                     case S:
                         event.consume();
-                        editor.saveFile();
+                        editor.saveFile("ntm");
                         break;
                     case C:
                         event.consume();

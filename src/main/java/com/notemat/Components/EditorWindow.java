@@ -20,6 +20,7 @@ import org.fxmisc.richtext.InlineCssTextArea;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class EditorWindow extends Stage {
     private final InlineCssTextArea richTextArea;
@@ -115,19 +116,19 @@ public class EditorWindow extends Stage {
         return imageLayer;
     }
 
-    public void saveFile(boolean bypassAutoSave) {
+    public void saveFile(String fileType, boolean bypassAutoSave) {
         String lastSavedPath = NTMFile.getLastSavedPath();
 
         if (bypassAutoSave || lastSavedPath == null) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save File");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Notemat File (*.ntm)", "*.ntm"));
-            // Open save dialog.
-            File file = fileChooser.showSaveDialog(getScene().getWindow());
-            if (file != null) {
+            String filePath = saveFileGetPath(fileType);
+
+            if (filePath != null) {
                 try {
-                    NTMFile.saveToFile(this, file.getAbsolutePath());
-                    toolBar.updateFilenameLabel();
+                    NTMFile.saveToFile(this, filePath);
+
+                    if (Objects.equals(fileType, "ntm")) {
+                        toolBar.updateFilenameLabel();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -143,22 +144,44 @@ public class EditorWindow extends Stage {
         }
     }
 
-    public void saveFile() {
-        saveFile(false);
+    public void saveFile(String fileType) {
+        saveFile(fileType, false);
     }
 
-    public void openFile() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Notemat File");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Notemat File (*.ntm)", "*.ntm"));
-        File file = fileChooser.showOpenDialog(getScene().getWindow());
-        if (file != null) {
+    public void openFile(String fileType) {
+        String filePath = openFileGetPath(fileType);
+
+        if (filePath != null) {
             try {
-                NTMFile.loadFromFile(this, file.getAbsolutePath());
-                toolBar.updateFilenameLabel();
+                NTMFile.loadFromFile(this, filePath);
+                if (Objects.equals(fileType, "ntm")) {
+                    toolBar.updateFilenameLabel();
+                }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String openFileGetPath(String fileType) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File (*.%s)".formatted(fileType), "*.%s".formatted(fileType)));
+        File file = fileChooser.showOpenDialog(getScene().getWindow());
+        if (file != null) {
+            return file.getAbsolutePath();
+        }
+        return null;
+    }
+
+    public String saveFileGetPath(String fileType) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("File (*.%s)".formatted(fileType), "*.%s".formatted(fileType)));
+        File file = fileChooser.showSaveDialog(getScene().getWindow());
+        if (file != null) {
+            return file.getAbsolutePath();
+        }
+        return null;
     }
 }

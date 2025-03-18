@@ -220,12 +220,15 @@
 }
 
 .toolbar .menu-item {
+    -fx-pref-height: 38px;
     -fx-background-color: #181824;
 }
 
 .menu-item .label {
     -fx-text-fill: #F0F0FA;
 }
+
+
 
 /* -------------------- */
 /* Context menu styling */
