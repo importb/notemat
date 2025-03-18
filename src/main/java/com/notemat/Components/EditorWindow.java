@@ -1,5 +1,7 @@
 package com.notemat.Components;
 
+import com.notemat.Filesystem.NTMFile;
+import com.notemat.Utils.KeyBindings;
 import com.notemat.Utils.WindowResizing;
 import javafx.scene.Scene;
 import javafx.scene.input.Clipboard;
@@ -11,13 +13,18 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.fxmisc.richtext.InlineCssTextArea;
 
+import java.io.File;
+import java.io.IOException;
+
 public class EditorWindow extends Stage {
-    private InlineCssTextArea richTextArea;
+    private final InlineCssTextArea richTextArea;
     private final Pane imageLayer;
+    private final ToolBar toolBar;
 
     public EditorWindow() {
         setTitle("Notemat");
@@ -45,14 +52,14 @@ public class EditorWindow extends Stage {
         root.setCenter(centerStack);
 
         // Toolbar
-        ToolBar appMenuBar = new ToolBar(this);
+        toolBar = new ToolBar(this);
 
         // Stylebar
         StyleBar styleBar = new StyleBar(richTextArea);
 
         // VBox for toolbar and stylebar
         VBox topContainer = new VBox();
-        topContainer.getChildren().addAll(appMenuBar, styleBar);
+        topContainer.getChildren().addAll(toolBar, styleBar);
         root.setTop(topContainer);
 
         Scene scene = new Scene(root, 1024, 600);
@@ -68,8 +75,11 @@ public class EditorWindow extends Stage {
         scene.getStylesheets().add(css);
 
         new WindowResizing(this);
+        new KeyBindings(this, scene, richTextArea, styleBar);
 
-
+        richTextArea.textProperty().addListener((obs, oldText, newText) -> {
+            NTMFile.markChanged(toolBar);
+        });
     }
 
     private void initImageLayer() {
@@ -103,5 +113,52 @@ public class EditorWindow extends Stage {
 
     public Pane getImageLayer() {
         return imageLayer;
+    }
+
+    public void saveFile(boolean bypassAutoSave) {
+        String lastSavedPath = NTMFile.getLastSavedPath();
+
+        if (bypassAutoSave || lastSavedPath == null) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save File");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Notemat File (*.ntm)", "*.ntm"));
+            // Open save dialog.
+            File file = fileChooser.showSaveDialog(getScene().getWindow());
+            if (file != null) {
+                try {
+                    NTMFile.saveToFile(this, file.getAbsolutePath());
+                    toolBar.updateFilenameLabel();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            try {
+                System.out.println("Saving to " + lastSavedPath);
+                NTMFile.saveToFile(this, lastSavedPath);
+                toolBar.updateFilenameLabel();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void saveFile() {
+        saveFile(false);
+    }
+
+    public void openFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Notemat File");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Notemat File (*.ntm)", "*.ntm"));
+        File file = fileChooser.showOpenDialog(getScene().getWindow());
+        if (file != null) {
+            try {
+                NTMFile.loadFromFile(this, file.getAbsolutePath());
+                toolBar.updateFilenameLabel();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

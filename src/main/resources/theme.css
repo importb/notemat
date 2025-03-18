@@ -203,6 +203,15 @@
     -fx-background-color: #181824;
 }
 
+.toolbar .filenameLabel {
+    -fx-font: 14px "Lexend";
+}
+
+.toolbar .filenameLabel:hover {
+    -fx-font: 14px "Lexend";
+    -fx-text-fill: #F0F0FA;
+}
+
 .popup {
     -fx-background-color: transparent;
     -fx-border-color: transparent;

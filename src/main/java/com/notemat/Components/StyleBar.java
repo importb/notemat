@@ -289,4 +289,19 @@ public class StyleBar extends HBox {
         Matcher matcher = pattern.matcher(style);
         return matcher.find() ? matcher.group(1) : null;
     }
+
+    public void toggleBold() {
+        boldToggle.setSelected(!boldToggle.isSelected());
+        updateSpecificStyle("bold");
+    }
+
+    public void toggleItalic() {
+        italicToggle.setSelected(!italicToggle.isSelected());
+        updateSpecificStyle("italic");
+    }
+
+    public void toggleUnderline() {
+        underlineToggle.setSelected(!underlineToggle.isSelected());
+        updateSpecificStyle("underline");
+    }
 }

@@ -2,18 +2,12 @@ package com.notemat.Filesystem;
 
 import com.notemat.Components.EditorWindow;
 import com.notemat.Components.ImageComponent;
+import com.notemat.Components.ToolBar;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -27,11 +21,14 @@ import javax.imageio.ImageIO;
 public class NTMFile {
     private static final String TEXT_FILE = "content.txt";
     private static final String IMAGES_FILE = "images.dat";
+    private static boolean changedSinceLastSave = false;
+    private static String lastSavedPath = null;
 
     /**
      * Serializable class to store image properties and bytes.
      */
     private static class ImageData implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
 
         public final byte[] imageBytes;
@@ -40,12 +37,7 @@ public class NTMFile {
         public final double width;
         public final double height;
 
-        public ImageData(BufferedImage image,
-                         double layoutX,
-                         double layoutY,
-                         double width,
-                         double height)
-                throws IOException {
+        public ImageData(BufferedImage image, double layoutX, double layoutY, double width, double height) throws IOException {
             this.layoutX = layoutX;
             this.layoutY = layoutY;
             this.width = width;
@@ -69,26 +61,23 @@ public class NTMFile {
      * @param filePath the path to the file
      * @throws IOException if an I/O error occurs
      */
-    public static void saveToFile(EditorWindow editor, String filePath)
-            throws IOException {
+    public static void saveToFile(EditorWindow editor, String filePath) throws IOException {
         if (!filePath.endsWith(".ntm")) {
             filePath += ".ntm";
         }
 
-        try (FileOutputStream fos = new FileOutputStream(filePath);
-             ZipOutputStream zos = new ZipOutputStream(fos)) {
+        try (FileOutputStream fos = new FileOutputStream(filePath); ZipOutputStream zos = new ZipOutputStream(fos)) {
+            // Save the file path and update changedSinceLastSave.
+            lastSavedPath = filePath;
+            changedSinceLastSave = false;
 
-            // Save text content.
+            // Save text content and images.
             saveTextContent(editor, zos);
-
-            // Save images.
             saveImages(editor, zos);
         }
     }
 
-    private static void saveTextContent(EditorWindow editor,
-                                        ZipOutputStream zos)
-            throws IOException {
+    private static void saveTextContent(EditorWindow editor, ZipOutputStream zos) throws IOException {
         ZipEntry textEntry = new ZipEntry(TEXT_FILE);
         zos.putNextEntry(textEntry);
 
@@ -99,9 +88,7 @@ public class NTMFile {
         zos.closeEntry();
     }
 
-    private static void saveImages(EditorWindow editor,
-                                   ZipOutputStream zos)
-            throws IOException {
+    private static void saveImages(EditorWindow editor, ZipOutputStream zos) throws IOException {
         ZipEntry imagesEntry = new ZipEntry(IMAGES_FILE);
         zos.putNextEntry(imagesEntry);
 
@@ -113,13 +100,7 @@ public class NTMFile {
                     // Use the current displayed image.
                     Image fxImage = imageComponent.getImage();
                     BufferedImage bImage = SwingFXUtils.fromFXImage(fxImage, null);
-                    ImageData data = new ImageData(
-                            bImage,
-                            imageComponent.getLayoutX(),
-                            imageComponent.getLayoutY(),
-                            imageComponent.getWidth(),
-                            imageComponent.getHeight()
-                    );
+                    ImageData data = new ImageData(bImage, imageComponent.getLayoutX(), imageComponent.getLayoutY(), imageComponent.getWidth(), imageComponent.getHeight());
                     imageDataList.add(data);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -145,11 +126,8 @@ public class NTMFile {
      * @throws IOException            if an I/O error occurs
      * @throws ClassNotFoundException if a class cannot be found
      */
-    public static void loadFromFile(EditorWindow editor, String filePath)
-            throws IOException, ClassNotFoundException {
-        try (FileInputStream fis = new FileInputStream(filePath);
-             ZipInputStream zis = new ZipInputStream(fis)) {
-
+    public static void loadFromFile(EditorWindow editor, String filePath) throws IOException, ClassNotFoundException {
+        try (FileInputStream fis = new FileInputStream(filePath); ZipInputStream zis = new ZipInputStream(fis)) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 switch (entry.getName()) {
@@ -157,13 +135,15 @@ public class NTMFile {
                     case IMAGES_FILE -> loadImages(editor, zis);
                 }
                 zis.closeEntry();
+
+                // Save the file path and update changedSinceLastSave.
+                lastSavedPath = filePath;
+                changedSinceLastSave = false;
             }
         }
     }
 
-    private static void loadTextContent(EditorWindow editor,
-                                        ZipInputStream zis)
-            throws IOException {
+    private static void loadTextContent(EditorWindow editor, ZipInputStream zis) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
@@ -174,9 +154,7 @@ public class NTMFile {
         editor.getRichTextArea().replaceText(content);
     }
 
-    private static void loadImages(EditorWindow editor,
-                                   ZipInputStream zis)
-            throws IOException, ClassNotFoundException {
+    private static void loadImages(EditorWindow editor, ZipInputStream zis) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
@@ -186,15 +164,11 @@ public class NTMFile {
         byte[] bytes = baos.toByteArray();
 
         // Remove existing ImageComponents.
-        editor.getImageLayer().getChildren().removeIf(
-                node -> node instanceof ImageComponent);
+        editor.getImageLayer().getChildren().removeIf(node -> node instanceof ImageComponent);
 
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-             ObjectInputStream ois = new ObjectInputStream(bais)) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes); ObjectInputStream ois = new ObjectInputStream(bais)) {
 
-            @SuppressWarnings("unchecked")
-            ArrayList<ImageData> imageDataList =
-                    (ArrayList<ImageData>) ois.readObject();
+            @SuppressWarnings("unchecked") ArrayList<ImageData> imageDataList = (ArrayList<ImageData>) ois.readObject();
 
             // Recreate ImageComponents from saved data.
             for (ImageData data : imageDataList) {
@@ -210,5 +184,18 @@ public class NTMFile {
                 editor.getImageLayer().getChildren().add(imageComponent);
             }
         }
+    }
+
+    public static void markChanged(ToolBar toolBar) {
+        changedSinceLastSave = true;
+        toolBar.updateFilenameLabel();
+    }
+
+    public static boolean getChangedSinceLastSave() {
+        return changedSinceLastSave;
+    }
+
+    public static String getLastSavedPath() {
+        return lastSavedPath;
     }
 }

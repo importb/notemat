@@ -118,7 +118,7 @@ public class ImageComponent extends Pane {
             e.consume();
         });
 
-        // Change the cursor when hovering over the resize handle.
+        // Cursor change
         resizeHandle.setOnMouseEntered(e -> setCursor(Cursor.SE_RESIZE));
         resizeHandle.setOnMouseExited(e -> setCursor(Cursor.DEFAULT));
     }

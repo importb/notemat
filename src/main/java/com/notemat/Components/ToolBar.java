@@ -17,28 +17,28 @@ public class ToolBar extends BorderPane {
     private double xOffset = 0;
     private double yOffset = 0;
     private final EditorWindow editor;
+    private final Label filenameLabel;
 
     public ToolBar(EditorWindow editor) {
         this.editor = editor;
         getStyleClass().add("toolbar");
         enableWindowDragging();
 
-        // Create the MenuBar with File and Edit menus
+        // Create the MenuBar.
         MenuBar menuBar = new MenuBar();
 
-        // Create "File" menu with basic menu items.
+        // Create "File" menu.
         Menu fileMenu = new Menu("File");
 
         MenuItem openFile = new MenuItem("Open");
         MenuItem saveFile = new MenuItem("Save");
+        MenuItem saveAsFile = new MenuItem("Save As");
         MenuItem exitItem = new MenuItem("Exit");
 
-        enableLoadingSaving(saveFile, openFile);
+        enableLoadingSaving(saveFile, saveAsFile, openFile);
+        fileMenu.getItems().addAll(openFile, saveFile, saveAsFile, new SeparatorMenuItem(), exitItem);
 
-        // Add items
-        fileMenu.getItems().addAll(openFile, saveFile, new SeparatorMenuItem(), exitItem);
-
-        // Create "Edit" menu with basic menu items.
+        // Create "Edit" menu.
         Menu editMenu = new Menu("Edit");
 
         MenuItem undoItem = new MenuItem("Undo");
@@ -52,41 +52,46 @@ public class ToolBar extends BorderPane {
 
         // Add menus to the MenuBar.
         menuBar.getMenus().addAll(fileMenu, editMenu);
-
-        // Make the MenuBar fill available space
         HBox.setHgrow(menuBar, Priority.ALWAYS);
+
+        // Create filename label
+        filenameLabel = new Label(getDisplayFilename());
+        filenameLabel.setAlignment(Pos.CENTER);
+        filenameLabel.setPadding(new Insets(0, 10, 0, 10));
+        filenameLabel.getStyleClass().add("filenameLabel");
+        HBox filenameBox = new HBox(filenameLabel);
+        filenameBox.setAlignment(Pos.CENTER);
+        HBox.setHgrow(filenameBox, Priority.ALWAYS);
 
         // Create window control buttons
         HBox windowControls = new HBox(5);
         windowControls.setAlignment(Pos.CENTER_RIGHT);
         windowControls.setPadding(new Insets(1, 5, 1, 5));
 
-        // Create Minimize button
-        Button minimizeButton = new Button("-");
+        Button minimizeButton = new Button("-");  // minimize
         minimizeButton.setOnAction(event -> {
             Stage stage = (Stage) getScene().getWindow();
             stage.setIconified(true);
         });
 
-        // Create Close button
-        Button closeButton = new Button("X");
+        Button closeButton = new Button("X");  // close
         closeButton.setOnAction(event -> {
             Stage stage = (Stage) getScene().getWindow();
             stage.close();
         });
 
-        // Add buttons to HBox
         windowControls.getChildren().addAll(minimizeButton, closeButton);
 
-        // Use BorderPane to position components
+        // Position components.
         setLeft(menuBar);
+        setCenter(filenameBox);
         setRight(windowControls);
 
-        // Set mouse event handlers for the entire BorderPane
+        // Mouse event handlers.
         enableWindowDragging();
     }
 
-    public void enableWindowDragging() {
+    private void enableWindowDragging() {
         // Dragging
         setOnMousePressed(event -> {
             xOffset = event.getSceneX();
@@ -100,47 +105,52 @@ public class ToolBar extends BorderPane {
         });
     }
 
-    public void enableLoadingSaving(MenuItem saveFile, MenuItem openFile) {
+    private void enableLoadingSaving(MenuItem saveFile, MenuItem saveAsFile, MenuItem openFile) {
         saveFile.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save Notemat File");
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Notemat File (*.ntm)", "*.ntm")
-            );
-            // Open save dialog.
-            File file = fileChooser.showSaveDialog(getScene().getWindow());
-            if (file != null) {
-                try {
-                    // Save the state of the EditorWindow.
-                    NTMFile.saveToFile(editor, file.getAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            editor.saveFile();
+        });
+
+        saveAsFile.setOnAction(event -> {
+            editor.saveFile(true);
         });
 
         openFile.setOnAction(event -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Notemat File");
-            fileChooser.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Notemat File (*.ntm)", "*.ntm")
-            );
-            File file = fileChooser.showOpenDialog(getScene().getWindow());
-            if (file != null) {
-                try {
-                    NTMFile.loadFromFile(editor, file.getAbsolutePath());
-                } catch (IOException | ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
+            editor.openFile();
         });
     }
 
-    public void addEditMenuFunctions(MenuItem undoItem, MenuItem redoItem, MenuItem cutItem, MenuItem copyItem, MenuItem pasteItem) {
-        undoItem.setOnAction(event -> {editor.getRichTextArea().undo();});
-        redoItem.setOnAction(event -> {editor.getRichTextArea().redo();});
-        cutItem.setOnAction(event -> {editor.getRichTextArea().cut();});
-        copyItem.setOnAction(event -> {editor.getRichTextArea().copy();});
-        pasteItem.setOnAction(event -> {editor.getRichTextArea().paste();});
+    private void addEditMenuFunctions(MenuItem undoItem, MenuItem redoItem, MenuItem cutItem, MenuItem copyItem, MenuItem pasteItem) {
+        undoItem.setOnAction(event -> {
+            editor.getRichTextArea().undo();
+        });
+        redoItem.setOnAction(event -> {
+            editor.getRichTextArea().redo();
+        });
+        cutItem.setOnAction(event -> {
+            editor.getRichTextArea().cut();
+        });
+        copyItem.setOnAction(event -> {
+            editor.getRichTextArea().copy();
+        });
+        pasteItem.setOnAction(event -> {
+            editor.getRichTextArea().paste();
+        });
+    }
+
+    public void updateFilenameLabel() {
+        filenameLabel.setText(getDisplayFilename());
+    }
+
+    private String getDisplayFilename() {
+        boolean changedSinceLastSave = NTMFile.getChangedSinceLastSave();
+
+        String lastSavedPath = NTMFile.getLastSavedPath();
+        String result = lastSavedPath != null ? new File(lastSavedPath).getName() : "Untitled";
+
+        if (changedSinceLastSave) {
+            return "*" + result;
+        } else {
+            return result;
+        }
     }
 }
