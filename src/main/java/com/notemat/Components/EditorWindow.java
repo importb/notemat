@@ -27,6 +27,16 @@ public class EditorWindow extends Stage {
     private final Pane imageLayer;
     private final ToolBar toolBar;
 
+    public EditorWindow(String filePath) {
+        this();
+        try {
+            NTMFile.loadFromFile(this, filePath);
+            toolBar.updateFilenameLabel();
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public EditorWindow() {
         setTitle("Notemat");
         initStyle(StageStyle.TRANSPARENT);
