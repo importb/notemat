@@ -141,6 +141,7 @@
     -fx-text-fill: #F0F0FA;
     -fx-font: 14px "Lexend";
     -fx-pref-height: 30px;
+    -fx-pref-width: 32px;
     -fx-border-radius: 2px;
     -fx-border-color: transparent;
 }
