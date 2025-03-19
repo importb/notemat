@@ -10,6 +10,11 @@
    HOVER_COLOR:         #BDBDFF
 */
 
+@font-face {
+    font-family: "Lexend";
+    src: url("/fonts/Lexend.ttf");
+}
+
 .root {
     -fx-background-color: #181824;
     -fx-border-color: #0F0F14;

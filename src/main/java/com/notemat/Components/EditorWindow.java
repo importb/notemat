@@ -3,6 +3,7 @@ package com.notemat.Components;
 import com.notemat.Filesystem.NTMFile;
 import com.notemat.Utils.KeyBindings;
 import com.notemat.Utils.WindowResizing;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
@@ -91,6 +92,18 @@ public class EditorWindow extends Stage {
 
         richTextArea.textProperty().addListener((obs, oldText, newText) -> {
             NTMFile.markChanged(toolBar);
+        });
+
+        richTextArea.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            Platform.runLater(() -> {
+                String currentText = richTextArea.getText();
+                int placeholderIndex = currentText.indexOf("\u200B");
+
+                if (placeholderIndex != -1) {
+                    richTextArea.replaceText(placeholderIndex, placeholderIndex + 1, "");
+                    richTextArea.moveTo(placeholderIndex + 1);
+                }
+            });
         });
     }
 

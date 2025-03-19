@@ -160,7 +160,25 @@ public class StyleBar extends HBox {
                 currentStyle = getStyleBarStyle();
             }
             String updatedStyle = updateSpecificProperty(currentStyle, property);
-            textArea.setStyle(selectionStart, selectionStart + 1, updatedStyle);
+            if (selectionStart >= textArea.getLength()) {
+                boolean correct = false;
+
+                try {
+                    if (textArea.getText().charAt(selectionStart - 1) == '\u200B') {
+                        correct = true;
+                    }
+                } catch(StringIndexOutOfBoundsException e) {
+                    // pass
+                }
+
+                if (correct) {
+                    System.out.println(textArea.getText().charAt(selectionStart - 1));
+                    textArea.setStyle(selectionStart - 1, selectionStart, updatedStyle);
+                } else {
+                    textArea.insertText(selectionStart, "\u200B");
+                    textArea.setStyle(selectionStart, selectionStart + 1, updatedStyle);
+                }
+            }
             return;
         }
 
