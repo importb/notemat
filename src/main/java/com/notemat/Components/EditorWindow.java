@@ -79,7 +79,8 @@ public class EditorWindow extends Stage {
 
         // Load the theme.
         String css = getClass().getResource("/theme.css").toExternalForm();
-        scene.getStylesheets().add(css);
+        String fontsCss = getClass().getResource("/fonts.css").toExternalForm();
+        scene.getStylesheets().addAll(fontsCss, css);
 
         // Other components.
         new ContextMenu(this, richTextArea);

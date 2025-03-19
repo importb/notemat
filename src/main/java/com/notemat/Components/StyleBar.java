@@ -29,7 +29,7 @@ public class StyleBar extends HBox {
         this.textArea = textArea;
 
         // Fonts
-        fontCombo = new ComboBox<>(FXCollections.observableArrayList("Arial", "Lexend"));
+        fontCombo = new ComboBox<>(FXCollections.observableArrayList("Lexend", "Arial", "Times New Roman"));
         fontCombo.setValue("Lexend");
         fontCombo.getStyleClass().add("stylebar-combobox");
         fontCombo.getStyleClass().add("font-combobox");
