@@ -1,74 +1,60 @@
 @font-face {
     font-family: "Lexend";
     src: url("/fonts/Lexend-Regular.ttf");
-    font-style: normal;
+    
 }
 
 @font-face {
     font-family: "Lexend";
     src: url("/fonts/Lexend-RegularItalic.ttf");
-    font-style: italic;
 }
 
 @font-face {
     font-family: "Lexend";
     src: url("/fonts/Lexend-BoldItalic.ttf");
-    font-weight: bold;
-    font-style: italic;
 }
 
 @font-face {
     font-family: "Lexend";
     src: url("/fonts/Lexend-Bold.ttf");
-    font-weight: bold;
 }
 
 @font-face {
     font-family: "Times New Roman";
-    src: url("/fonts/Times New Roman.ttf");
-    font-style: normal;
+    src: url("/fonts/Times-New-Roman.ttf");
 }
 
 @font-face {
     font-family: "Times New Roman";
-    src: url("/fonts/Times New Roman Italic.ttf");
-    font-style: italic;
+    src: url("/fonts/Times-New-Roman-Italic.ttf");
 }
 
 @font-face {
     font-family: "Times New Roman";
-    src: url("/fonts/Times New Roman Bold Italic.ttf");
-    font-weight: bold;
-    font-style: italic;
+    src: url("/fonts/Times-New-Roman-Bold-Italic.ttf");
 }
 
 @font-face {
     font-family: "Times New Roman";
-    src: url("/fonts/Times New Roman Bold.ttf");
-    font-weight: bold;
+    src: url("/fonts/Times-New-Roman-Bold.ttf");
 }
 
 @font-face {
     font-family: "Arial";
     src: url("/fonts/Arial.ttf");
-    font-style: normal;
 }
 
 @font-face {
     font-family: "Arial";
-    src: url("/fonts/Arial Italic.ttf");
-    font-style: italic;
+    src: url("/fonts/Arial-Italic.ttf");
 }
 
 @font-face {
     font-family: "Arial";
-    src: url("/fonts/Arial Bold Italic.ttf");
-    font-weight: bold;
-    font-style: italic;
+    src: url("/fonts/Arial-Bold-Italic.ttf");
 }
 
 @font-face {
     font-family: "Arial";
-    src: url("/fonts/Arial Bold.ttf");
-    font-weight: bold;
+    src: url("/fonts/Arial-Bold.ttf");
 }

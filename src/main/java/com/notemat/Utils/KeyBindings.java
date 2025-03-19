@@ -1,11 +1,8 @@
 package com.notemat.Utils;
 
 import com.notemat.Components.EditorWindow;
-import com.notemat.Components.ImageComponent;
 import com.notemat.Components.StyleBar;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
