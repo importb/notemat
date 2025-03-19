@@ -6,8 +6,10 @@ import org.fxmisc.richtext.InlineCssTextArea;
 public class ContextMenu {
     private final InlineCssTextArea textArea;
     private final javafx.scene.control.ContextMenu contextMenu;
+    private final EditorWindow editor;
 
-    public ContextMenu(InlineCssTextArea textArea) {
+    public ContextMenu(EditorWindow editor, InlineCssTextArea textArea) {
+        this.editor = editor;
         this.textArea = textArea;
         this.contextMenu = new javafx.scene.control.ContextMenu();
         createContextMenu();
@@ -18,14 +20,12 @@ public class ContextMenu {
         MenuItem copy = new MenuItem("Copy");
         MenuItem paste = new MenuItem("Paste");
 
-        // Bind menu actions to the text area's built-in methods.
+        // Actions
         cut.setOnAction(e -> textArea.cut());
         copy.setOnAction(e -> textArea.copy());
-        paste.setOnAction(e -> textArea.paste());
+        paste.setOnAction(e -> editor.pasteTextOrImage());
 
         contextMenu.getItems().addAll(cut, copy, paste);
-
-        // Set the context menu on the text area so it shows up on right-click.
         textArea.setContextMenu(contextMenu);
     }
 

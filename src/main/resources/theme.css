@@ -140,6 +140,7 @@
 /* ------------------------- */
 .stylebar-colorpicker {
     -fx-pref-width: 165px;
+    -fx-pref-height: 30px;
 }
 
 .stylebar-colorpicker .label {

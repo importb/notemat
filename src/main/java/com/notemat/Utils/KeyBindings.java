@@ -48,26 +48,12 @@ public class KeyBindings {
                         break;
                     case V:
                         event.consume();
-                        pasteTextOrImage(textArea, imageLayer);
+                        editor.pasteTextOrImage();
                         break;
                     default:
                         break;
                 }
             }
         });
-    }
-
-    private void pasteTextOrImage(InlineCssTextArea textArea, Pane imageLayer) {
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        if (clipboard.hasImage()) {
-            Image clipboardImage = clipboard.getImage();
-            ImageComponent imageComponent = new ImageComponent(clipboardImage);
-            imageComponent.setManaged(false);
-            imageComponent.setLayoutX(10);
-            imageComponent.setLayoutY(10);
-            imageLayer.getChildren().add(imageComponent);
-        } else {
-            textArea.paste();
-        }
     }
 }

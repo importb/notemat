@@ -5,16 +5,14 @@ import com.notemat.Utils.KeyBindings;
 import com.notemat.Utils.WindowResizing;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.image.Image;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -49,6 +47,7 @@ public class EditorWindow extends Stage {
         richTextArea = new InlineCssTextArea();
         richTextArea.setWrapText(true);
         richTextArea.setPrefSize(1024, 600);
+        initRichTextArea();
 
         // Image layer
         imageLayer = new Pane();
@@ -64,32 +63,34 @@ public class EditorWindow extends Stage {
         centerStack.getChildren().addAll(richTextArea, imageLayer);
         root.setCenter(centerStack);
 
-        // Toolbar
+        // Toolbar and stylebar
         toolBar = new ToolBar(this);
-
-        // Stylebar
         StyleBar styleBar = new StyleBar(richTextArea);
-
-        // VBox for toolbar and stylebar
         VBox topContainer = new VBox();
         topContainer.getChildren().addAll(toolBar, styleBar);
         root.setTop(topContainer);
 
+        // Main scene
         Scene scene = new Scene(root, 1024, 600);
         setScene(scene);
 
+        // Initial style.
         richTextArea.setStyle(0, 0, styleBar.getStyleBarStyle());
-
-        // Context menu
-        new ContextMenu(richTextArea);
 
         // Load the theme.
         String css = getClass().getResource("/theme.css").toExternalForm();
         scene.getStylesheets().add(css);
 
+        // Other components.
+        new ContextMenu(this, richTextArea);
         new WindowResizing(this);
         new KeyBindings(this, scene, richTextArea, styleBar, imageLayer);
+    }
 
+    /**
+     * Enables toolBar updating and event handler for removing style applier character.
+     */
+    private void initRichTextArea() {
         richTextArea.textProperty().addListener((obs, oldText, newText) -> {
             NTMFile.markChanged(toolBar);
         });
@@ -107,10 +108,11 @@ public class EditorWindow extends Stage {
         });
     }
 
+    /**
+     * Initializes Pane that holds the image content.
+     */
     private void initImageLayer() {
         imageLayer.setPickOnBounds(false);
-
-        // Image scrolling
         richTextArea.estimatedScrollYProperty().addListener((obs, oldVal, newVal) -> {
             imageLayer.setTranslateY(-newVal);
         });
@@ -124,6 +126,11 @@ public class EditorWindow extends Stage {
         return imageLayer;
     }
 
+    /**
+     * Function used to save a .ntm file.
+     * @param fileType - filetype to save to.
+     * @param bypassAutoSave - check for autosave (only for .ntm)
+     */
     public void saveFile(String fileType, boolean bypassAutoSave) {
         String lastSavedPath = NTMFile.getLastSavedPath();
 
@@ -152,10 +159,18 @@ public class EditorWindow extends Stage {
         }
     }
 
+    /**
+     * Function used to save a .ntm file, with no autosave.
+     * @param fileType - file type. (use .ntm)
+     */
     public void saveFile(String fileType) {
         saveFile(fileType, false);
     }
 
+    /**
+     * Opens a .ntm file.
+     * @param fileType - file type to open.
+     */
     public void openFile(String fileType) {
         String filePath = openFileGetPath(fileType);
 
@@ -171,6 +186,11 @@ public class EditorWindow extends Stage {
         }
     }
 
+    /**
+     * Opens a filechooser for loading and only shows the specified file type files.
+     * @param fileType - file type.
+     * @return - selected file path / null
+     */
     public String openFileGetPath(String fileType) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open File");
@@ -182,6 +202,11 @@ public class EditorWindow extends Stage {
         return null;
     }
 
+    /**
+     * Opens a filechooser for saving and only shows the specified file type files.
+     * @param fileType - file type.
+     * @return - selected file path / null
+     */
     public String saveFileGetPath(String fileType) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save File");
@@ -193,5 +218,20 @@ public class EditorWindow extends Stage {
         return null;
     }
 
-
+    /**
+     * Pasting function.
+     */
+    public void pasteTextOrImage() {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        if (clipboard.hasImage()) {
+            Image clipboardImage = clipboard.getImage();
+            ImageComponent imageComponent = new ImageComponent(clipboardImage);
+            imageComponent.setManaged(false);
+            imageComponent.setLayoutX(10);
+            imageComponent.setLayoutY(10);
+            imageLayer.getChildren().add(imageComponent);
+        } else {
+            richTextArea.paste();
+        }
+    }
 }
