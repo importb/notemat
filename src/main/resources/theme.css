@@ -12,7 +12,26 @@
 
 @font-face {
     font-family: "Lexend";
-    src: url("/fonts/Lexend.ttf");
+    src: url("/fonts/Lexend-Regular.ttf");
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Lexend";
+    src: url("/fonts/Lexend-RegularItalic.ttf");
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Lexend";
+    src: url("/fonts/Lexend-BoldItalic.ttf");
+    font-style: bold italic;
+}
+
+@font-face {
+    font-family: "Lexend";
+    src: url("/fonts/Lexend-Bold.ttf");
+    font-style: bold;
 }
 
 .root {

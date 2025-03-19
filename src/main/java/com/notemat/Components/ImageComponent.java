@@ -149,23 +149,14 @@ public class ImageComponent extends Pane {
         }
     }
 
-    /**
-     * Returns the JavaFX Image shown by this component.
-     */
     public Image getImage() {
         return imageView.getImage();
     }
 
-    /**
-     * Returns the displayed width of the image.
-     */
     public double getImageWidth() {
         return imageView.getFitWidth();
     }
 
-    /**
-     * Returns the displayed height of the image.
-     */
     public double getImageHeight() {
         return imageView.getFitHeight();
     }
