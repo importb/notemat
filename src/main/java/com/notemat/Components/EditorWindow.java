@@ -26,6 +26,9 @@ public class EditorWindow extends Stage {
     private final InlineCssTextArea richTextArea;
     private final Pane imageLayer;
     private final ToolBar toolBar;
+    private final StyleBar styleBar;
+    public final Preferences preferences;
+    private ContextMenu contextMenu;
 
     public EditorWindow(String filePath) {
         this();
@@ -40,6 +43,8 @@ public class EditorWindow extends Stage {
     public EditorWindow() {
         setTitle("Notemat");
         initStyle(StageStyle.TRANSPARENT);
+
+        preferences = new Preferences(this);
 
         BorderPane root = new BorderPane();
 
@@ -65,7 +70,7 @@ public class EditorWindow extends Stage {
 
         // Toolbar and stylebar
         toolBar = new ToolBar(this);
-        StyleBar styleBar = new StyleBar(richTextArea);
+        styleBar = new StyleBar(richTextArea);
         VBox topContainer = new VBox();
         topContainer.getChildren().addAll(toolBar, styleBar);
         root.setTop(topContainer);
@@ -83,7 +88,7 @@ public class EditorWindow extends Stage {
         scene.getStylesheets().addAll(fontsCss, css);
 
         // Other components.
-        new ContextMenu(this, richTextArea);
+        contextMenu = new ContextMenu(this, richTextArea);
         new WindowResizing(this);
         new KeyBindings(this, scene, richTextArea, styleBar, imageLayer);
     }
@@ -102,8 +107,15 @@ public class EditorWindow extends Stage {
                 int placeholderIndex = currentText.indexOf("\u200B");
 
                 if (placeholderIndex != -1) {
+                    int selectionStart = richTextArea.getSelection().getStart();
+
                     richTextArea.replaceText(placeholderIndex, placeholderIndex + 1, "");
-                    richTextArea.moveTo(placeholderIndex + 1);
+
+                    if (selectionStart - 2 == placeholderIndex) {
+                        richTextArea.moveTo(placeholderIndex + 1);
+                    } else {
+                        richTextArea.moveTo(selectionStart);
+                    }
                 }
             });
         });
@@ -234,5 +246,13 @@ public class EditorWindow extends Stage {
         } else {
             richTextArea.paste();
         }
+    }
+
+    public StyleBar getStylebar() {
+        return styleBar;
+    }
+
+    public void recreateContextMenu() {
+        contextMenu = new ContextMenu(this, richTextArea);
     }
 }

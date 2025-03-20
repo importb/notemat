@@ -24,10 +24,9 @@ public class ToolBar extends BorderPane {
         getStyleClass().add("toolbar");
         enableWindowDragging();
 
-        // Create the MenuBar.
         MenuBar menuBar = new MenuBar();
 
-        // Create "File" menu.
+        // File menu.
         Menu fileMenu = new Menu("File");
 
         MenuItem openFile = new MenuItem("Open");
@@ -36,12 +35,12 @@ public class ToolBar extends BorderPane {
         MenuItem exitItem = new MenuItem("Exit");
         enableLoadingSaving(saveFile, saveAsFile, openFile);
 
-        // Create Import submenu.
+        // Import submenu.
         Menu importMenu = new Menu("Import");
         MenuItem importTxt = new MenuItem("Import .txt");
         importMenu.getItems().addAll(importTxt);
 
-        // Create Export submenu.
+        // Export submenu.
         Menu exportMenu = new Menu("Export");
         MenuItem exportTxt = new MenuItem("Export to .txt");
         exportMenu.getItems().addAll(exportTxt);
@@ -59,7 +58,7 @@ public class ToolBar extends BorderPane {
 
         enableAlternativeLoadingSaving(importTxt, exportTxt);
 
-        // Create "Edit" menu.
+        // Edit menu.
         Menu editMenu = new Menu("Edit");
 
         MenuItem undoItem = new MenuItem("Undo");
@@ -71,8 +70,19 @@ public class ToolBar extends BorderPane {
         addEditMenuFunctions(undoItem, redoItem, cutItem, copyItem, pasteItem);
         editMenu.getItems().addAll(undoItem, redoItem, new SeparatorMenuItem(), cutItem, copyItem, pasteItem);
 
+        // Settings menu.
+        Menu settingsMenu = new Menu("Settings");
+
+        MenuItem preferencesItems = new MenuItem("Preferences");
+        preferencesItems.setOnAction(event -> {
+            editor.preferences.showAndWait();
+        });
+
+        settingsMenu.getItems().addAll(preferencesItems);
+
+
         // Add menus to the MenuBar.
-        menuBar.getMenus().addAll(fileMenu, editMenu);
+        menuBar.getMenus().addAll(fileMenu, editMenu, settingsMenu);
         HBox.setHgrow(menuBar, Priority.ALWAYS);
 
         // Create filename label

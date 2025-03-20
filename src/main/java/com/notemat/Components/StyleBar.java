@@ -25,18 +25,19 @@ public class StyleBar extends HBox {
     private boolean ignoreControlEvents = false;
     private boolean ignoreCaretUpdate = false;
 
+
     public StyleBar(InlineCssTextArea textArea) {
         this.textArea = textArea;
 
         // Fonts
         fontCombo = new ComboBox<>(FXCollections.observableArrayList("Lexend", "Arial", "Times New Roman"));
-        fontCombo.setValue("Lexend");
+        fontCombo.setValue(Preferences.getMainFont());
         fontCombo.getStyleClass().add("stylebar-combobox");
         fontCombo.getStyleClass().add("font-combobox");
 
         // Font sizes
         sizeCombo = new ComboBox<>(FXCollections.observableArrayList(8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 54, 60, 66, 72, 78, 84));
-        sizeCombo.setValue(14);
+        sizeCombo.setValue(Preferences.getMainFontSize());
         sizeCombo.getStyleClass().add("stylebar-combobox");
 
         // Bold, Italic, and Underline.
@@ -261,7 +262,7 @@ public class StyleBar extends HBox {
      * @param value    The value to set
      * @return The updated style string
      */
-    private String updateCssProperty(String style, String property, String value) {
+    public String updateCssProperty(String style, String property, String value) {
         String regex = property + ":\\s*[^;]+;";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(style);
