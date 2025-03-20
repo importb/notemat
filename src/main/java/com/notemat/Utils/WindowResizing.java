@@ -1,21 +1,25 @@
 package com.notemat.Utils;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class WindowResizing {
     private final Stage stage;
     private final double borderThickness = 5.0;
     private boolean inResizeZone = false;
-    private double initX; // Mouse screen coordinate at press
+    private double initX;
     private double initY;
-    private double initStageX; // Stage X coordinate at press
-    private double initStageY; // Stage Y coordinate at press
+    private double initStageX;
+    private double initStageY;
     private double initStageWidth;
     private double initStageHeight;
     private boolean resizing = false;
     private ResizeDirection direction = ResizeDirection.NONE;
+    private static boolean isMaximized = false;
+    private static double prevX, prevY, prevWidth, prevHeight;
 
     private enum ResizeDirection {
         NW, N, NE, E, SE, S, SW, W, NONE
@@ -190,6 +194,33 @@ public class WindowResizing {
             return ResizeDirection.E;
         }
         return ResizeDirection.NONE;
+    }
+
+    public static void maximize(Stage stage) {
+        if (isMaximized) {
+            // Restore the window to its previous size and position
+            stage.setX(prevX);
+            stage.setY(prevY);
+            stage.setWidth(prevWidth);
+            stage.setHeight(prevHeight);
+            isMaximized = false;
+        } else {
+            // Save the current size and position
+            prevX = stage.getX();
+            prevY = stage.getY();
+            prevWidth = stage.getWidth();
+            prevHeight = stage.getHeight();
+
+            // Get the screen bounds
+            Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+            // Maximize the window to fill the screen
+            stage.setX(screenBounds.getMinX());
+            stage.setY(screenBounds.getMinY());
+            stage.setWidth(screenBounds.getWidth());
+            stage.setHeight(screenBounds.getHeight());
+            isMaximized = true;
+        }
     }
 
     private void updateTextAreaStyles(javafx.scene.Node node, boolean inResizeZone) {

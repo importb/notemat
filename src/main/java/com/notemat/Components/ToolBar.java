@@ -2,6 +2,7 @@ package com.notemat.Components;
 
 import com.notemat.Filesystem.NTMFile;
 import com.notemat.Filesystem.TXTFile;
+import com.notemat.Utils.WindowResizing;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -99,6 +100,13 @@ public class ToolBar extends BorderPane {
         windowControls.setAlignment(Pos.CENTER_RIGHT);
         windowControls.setPadding(new Insets(1, 5, 1, 5));
 
+        Button maximizeButton = new Button("▫");  // maximize
+        maximizeButton.getStyleClass().add("maximize-button");
+        maximizeButton.setOnAction(event -> {
+            Stage stage = (Stage) getScene().getWindow();
+            WindowResizing.maximize(stage);
+        });
+
         Button minimizeButton = new Button("-");  // minimize
         minimizeButton.setOnAction(event -> {
             Stage stage = (Stage) getScene().getWindow();
@@ -111,7 +119,7 @@ public class ToolBar extends BorderPane {
             stage.close();
         });
 
-        windowControls.getChildren().addAll(minimizeButton, closeButton);
+        windowControls.getChildren().addAll(minimizeButton, maximizeButton, closeButton);
 
         // Position components.
         setLeft(menuBar);
@@ -120,6 +128,14 @@ public class ToolBar extends BorderPane {
 
         // Mouse event handlers.
         enableWindowDragging();
+
+        // Double click to maximize.
+        this.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Stage stage = (Stage) getScene().getWindow();
+                WindowResizing.maximize(stage);
+            }
+        });
     }
 
     private void enableWindowDragging() {

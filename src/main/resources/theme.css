@@ -186,6 +186,10 @@
     -fx-text-fill: #BDBDFF;
 }
 
+.toolbar .maximize-button {
+    -fx-translate-y: -1px;
+}
+
 .toolbar .label {
     -fx-text-fill: #F0F0FA;
     -fx-padding: 0 6 0 6;
