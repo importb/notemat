@@ -14,7 +14,7 @@ Notemat is a powerful and versatile note-taking application designed to help use
 ## Support
 Notemat is actively developed and tested on **Linux**, with support for **Windows** as well. While the primary focus is on ensuring a seamless experience on Linux, the application is designed to work reliably on both platforms.
 
-
+---
 
 ## Installing
 
