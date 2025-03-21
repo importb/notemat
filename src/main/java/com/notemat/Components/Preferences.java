@@ -14,13 +14,18 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+
+/**
+ * The Preferences class provides a custom window for managing user
+ * preferences such as main font, font size, Gemini API key, and Gemini model.
+ * The preferences are stored in a properties file.
+ */
 public class Preferences extends Stage {
     private static final String PREFS_FILE = "preferences.properties";
     private static final String KEY_MAIN_FONT = "mainFont";
@@ -39,18 +44,27 @@ public class Preferences extends Stage {
     private double xOffset = 0;
     private double yOffset = 0;
 
+    /**
+     * Constructs the Preferences window for the specified EditorWindow.
+     *
+     * @param editor The EditorWindow instance to be updated when preferences
+     *               are saved.
+     */
     public Preferences(EditorWindow editor) {
-        // no deco.
+        // Initialization
         initStyle(StageStyle.TRANSPARENT);
-
         setTitle("Preferences");
+        setResizable(false);
+        initModality(Modality.APPLICATION_MODAL);
+
+        // Load preferences from file.
         properties = new Properties();
         loadPreferences();
-        setResizable(false);
 
         // Toolbar
         HBox toolbar = createToolbar();
 
+        // --- Font Settings ---
         // Main font selection
         Label fontLabel = new Label("Main Font:");
         fontComboBox = new ComboBox<>(FXCollections.observableArrayList("Lexend", "Arial", "Times New Roman"));
@@ -80,6 +94,8 @@ public class Preferences extends Stage {
         fontSettingsBox.setPadding(new Insets(5, 0, 0, 8));
         fontSettingsBox.setAlignment(Pos.CENTER_LEFT);
 
+
+        // --- Gemini Settings ---
         // Enable Gemini checkbox
         enableGeminiCheckBox = new CheckBox("Enable Gemini");
         String enableGeminiProp = properties.getProperty(KEY_ENABLE_GEMINI, "false");
@@ -122,6 +138,7 @@ public class Preferences extends Stage {
         buttonBox.setPadding(new Insets(65, 10, 0, 0));
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
+
         // Combine all the sections into the root container
         VBox root = new VBox(10, toolbar, fontSettingsBox, geminiSettingsBox, buttonBox);
         root.getStyleClass().add("preferences");
@@ -129,15 +146,18 @@ public class Preferences extends Stage {
         Scene scene = new Scene(root, 400, 405);
         setScene(scene);
 
-        // Make the preferences window modal.
-        initModality(Modality.APPLICATION_MODAL);
-
         // Apply theme from CSS resources.
         String css = getClass().getResource("/theme.css").toExternalForm();
         String fontsCss = getClass().getResource("/fonts.css").toExternalForm();
         scene.getStylesheets().addAll(fontsCss, css);
     }
 
+    /**
+     * Creates the toolbar for the Preferences window which includes
+     * minimize and close buttons and enables window dragging.
+     *
+     * @return the configured HBox toolbar.
+     */
     private HBox createToolbar() {
         HBox toolbar = new HBox(5);
         toolbar.setAlignment(Pos.CENTER_RIGHT);

@@ -6,30 +6,52 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
+
+/**
+ * The WindowResizing class enables custom resizing for a Stage (window).
+ * It sets up mouse event filters to detect when the user is in a window
+ * resize zone and then resizes the window accordingly. It also provides
+ * a simple maximize/restore function.
+ */
 public class WindowResizing {
     private final Stage stage;
     private final double borderThickness = 5.0;
+
     private boolean inResizeZone = false;
+    private boolean resizing = false;
+
     private double initX;
     private double initY;
     private double initStageX;
     private double initStageY;
     private double initStageWidth;
     private double initStageHeight;
-    private boolean resizing = false;
+
     private ResizeDirection direction = ResizeDirection.NONE;
     private static boolean isMaximized = false;
     private static double prevX, prevY, prevWidth, prevHeight;
 
+    /**
+     * Enum representing the possible directions from which a window can be resized.
+     */
     private enum ResizeDirection {
         NW, N, NE, E, SE, S, SW, W, NONE
     }
 
+    /**
+     * Constructs a WindowResizing object for the given Stage and installs the necessary event filters.
+     *
+     * @param stage the Stage (window) to enable resizing on.
+     */
     public WindowResizing(Stage stage) {
         this.stage = stage;
         installEventFilters();
     }
 
+    /**
+     * Installs mouse event filters on the stage's scene to handle mouse movement,
+     * press, drag, and release events for window resizing.
+     */
     private void installEventFilters() {
         stage.getScene().addEventFilter(MouseEvent.MOUSE_MOVED, this::handleMouseMoved);
         stage.getScene().addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
@@ -37,6 +59,12 @@ public class WindowResizing {
         stage.getScene().addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
     }
 
+    /**
+     * Handles mouse movements by checking if the pointer is in the resize zone.
+     * If so, updates the cursor to the appropriate resize cursor.
+     *
+     * @param event the MouseEvent to process.
+     */
     private void handleMouseMoved(MouseEvent event) {
         double mouseX = event.getSceneX();
         double mouseY = event.getSceneY();
@@ -61,6 +89,12 @@ public class WindowResizing {
         stage.getScene().setCursor(cursor);
     }
 
+    /**
+     * Handles mouse press events. If the press is within the resize zone,
+     * saves initial values for the stage bounds and sets the resizing flag.
+     *
+     * @param event the MouseEvent to process.
+     */
     private void handleMousePressed(MouseEvent event) {
         double mouseX = event.getSceneX();
         double mouseY = event.getSceneY();
@@ -81,6 +115,12 @@ public class WindowResizing {
         }
     }
 
+    /**
+     * Handles mouse drag events to resize the window based on the drag direction,
+     * enforcing minimum window dimensions.
+     *
+     * @param event the MouseEvent to process.
+     */
     private void handleMouseDragged(MouseEvent event) {
         if (!resizing) {
             return;
@@ -153,6 +193,13 @@ public class WindowResizing {
         event.consume();
     }
 
+
+    /**
+     * Handles mouse release events by stopping any ongoing resizing
+     * and resetting the cursor.
+     *
+     * @param event the MouseEvent to process.
+     */
     private void handleMouseReleased(MouseEvent event) {
         // Only consume the event if we were actually resizing.
         if (resizing) {
@@ -163,6 +210,16 @@ public class WindowResizing {
         }
     }
 
+    /**
+     * Determines the resize direction based on the mouse position relative
+     * to the stage's borders.
+     *
+     * @param mouseX the x-coordinate of the mouse.
+     * @param mouseY the y-coordinate of the mouse.
+     * @param width  the current width of the stage.
+     * @param height the current height of the stage.
+     * @return a ResizeDirection value indicating where the resize ROI is.
+     */
     private ResizeDirection getResizeDirection(double mouseX, double mouseY, double width, double height) {
         boolean left = mouseX < borderThickness;
         boolean right = mouseX > width - borderThickness;
@@ -196,6 +253,13 @@ public class WindowResizing {
         return ResizeDirection.NONE;
     }
 
+    /**
+     * Maximizes or restores the stage. If the stage is maximized, it restores
+     * the stage to its previous size and position; otherwise, it maximizes the
+     * stage to the bounds of the primary screen.
+     *
+     * @param stage the Stage to maximize or restore.
+     */
     public static void maximize(Stage stage) {
         if (isMaximized) {
             // Restore the window to its previous size and position
@@ -223,6 +287,13 @@ public class WindowResizing {
         }
     }
 
+    /**
+     * Recursively updates style classes for nodes in the given scene graph.
+     * Adds or removes the "resize-zone" class based on the inResizeZone flag.
+     *
+     * @param node         the root node of the scene graph to update.
+     * @param inResizeZone if true, the node is in a resize zone.
+     */
     private void updateTextAreaStyles(javafx.scene.Node node, boolean inResizeZone) {
         if (node.getStyleClass().contains("styled-text-area")) {
             if (inResizeZone) {

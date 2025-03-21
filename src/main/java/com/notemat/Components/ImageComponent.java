@@ -12,25 +12,36 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 
+
+/**
+ * A custom Pane to display and interact with an image.
+ * Provides functionality for dragging, resizing, and deletion.
+ */
 public class ImageComponent extends Pane {
+    private static final double MIN_SIZE = 10;
+    private static final double HANDLE_SIZE = 10;
     private final ImageView imageView;
     private final Rectangle resizeHandle;
+
     private boolean dragging = false;
     private boolean resizing = false;
     private boolean selected = false;
     private double dragOffsetX, dragOffsetY;
     private double initWidth, initHeight;
     private double initMouseX, initMouseY;
-    private static final double MIN_SIZE = 10;
-    private static final double HANDLE_SIZE = 10;
 
+
+    /**
+     * Constructs an ImageComponent with the given image.
+     *
+     * @param image the Image to be displayed.
+     */
     public ImageComponent(Image image) {
         // Set up the image view.
         imageView = new ImageView(image);
         imageView.setPreserveRatio(false);
         imageView.setFitWidth(image.getWidth());
         imageView.setFitHeight(image.getHeight());
-
         setPadding(new Insets(2));
 
         // Create the resize handle.
@@ -41,7 +52,7 @@ public class ImageComponent extends Pane {
         resizeHandle.setLayoutX(imageView.getFitWidth() - HANDLE_SIZE);
         resizeHandle.setLayoutY(imageView.getFitHeight() - HANDLE_SIZE);
 
-        // Add
+        // Add image and resize handle.
         getChildren().addAll(imageView, resizeHandle);
 
         // Enable mouse events for the entire node.
@@ -60,6 +71,9 @@ public class ImageComponent extends Pane {
         });
     }
 
+    /**
+     * Initializes mouse event handlers for selection, dragging, and resizing.
+     */
     private void initMouseEvents() {
         // Prevent toggling selection when clicking on the resize handle to avoid conflict.
         setOnMouseClicked(e -> {
@@ -125,7 +139,7 @@ public class ImageComponent extends Pane {
 
     /**
      * Toggles the selection state of this image. When selected, the resize
-     * handle is shown.
+     * handle is shown and a drop shadow effect is applied.
      */
     private void toggleSelection() {
         selected = !selected;
@@ -137,7 +151,9 @@ public class ImageComponent extends Pane {
     }
 
     /**
-     * Updates the style based on the selection state.
+     * Updates the visual style based on the current selection state.
+     * If selected, applies a drop shadow and shows the resize handle;
+     * otherwise, removes these effects.
      */
     private void updateStyle() {
         if (selected) {
@@ -149,14 +165,29 @@ public class ImageComponent extends Pane {
         }
     }
 
+    /**
+     * Gets the image displayed in this component.
+     *
+     * @return the Image object.
+     */
     public Image getImage() {
         return imageView.getImage();
     }
 
+    /**
+     * Gets the current width of the image component.
+     *
+     * @return the width in pixels.
+     */
     public double getImageWidth() {
         return imageView.getFitWidth();
     }
 
+    /**
+     * Gets the current height of the image component.
+     *
+     * @return the height in pixels.
+     */
     public double getImageHeight() {
         return imageView.getFitHeight();
     }

@@ -1,11 +1,15 @@
 package com.notemat.Filesystem;
 
 import com.notemat.Components.EditorWindow;
-
 import java.io.*;
 
-public class TXTFile {
 
+/**
+ * Provides functions to import and export plain text files.
+ * This class handles saving the content of an EditorWindow as a .txt file
+ * and importing text from a .txt file into the EditorWindow.
+ */
+public class TXTFile {
     /**
      * Saves the contents of the EditorWindow's rich text area as a .txt file.
      *

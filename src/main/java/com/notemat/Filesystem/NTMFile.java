@@ -9,7 +9,6 @@ import org.fxmisc.richtext.model.StyleSpan;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.fxmisc.richtext.InlineCssTextArea;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -20,6 +19,8 @@ import javax.imageio.ImageIO;
 
 /**
  * Handles saving and loading of EditorWindow files in a custom format.
+ * The file format is a ZIP archive containing text content (with style spans)
+ * and serialized image data.
  */
 public class NTMFile {
     private static final String TEXT_FILE = "content.dat";
@@ -28,9 +29,10 @@ public class NTMFile {
     private static String lastSavedPath = null;
 
     /**
-     * Serializable class to store image properties and bytes.
+     * Serializable class to store image properties and image bytes.
      */
     private static class ImageData implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
         public final byte[] imageBytes;
         public final double layoutX;
@@ -57,10 +59,11 @@ public class NTMFile {
 
     /**
      * Serializable representation for an individual style span.
-     * The span indicates that the next {@code length} characters should have the
+     * Indicates that the next {@code length} characters should have the
      * specified inline CSS represented by {@code style}.
      */
     private static class StyleSpanData implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
         public final int length;
         public final String style;
@@ -75,6 +78,7 @@ public class NTMFile {
      * Serializable representation of the styled document.
      */
     private static class StyledDocument implements Serializable {
+        @Serial
         private static final long serialVersionUID = 1L;
         public final String text;
         public final ArrayList<StyleSpanData> spans;
@@ -109,7 +113,11 @@ public class NTMFile {
     }
 
     /**
-     * Saves the styled text content, including text and its style spans.
+     * Saves the styled text content, including the plain text and its style spans.
+     *
+     * @param editor the EditorWindow to retrieve content from.
+     * @param zos    the ZipOutputStream to write to.
+     * @throws IOException if an I/O error occurs.
      */
     private static void saveTextContent(EditorWindow editor, ZipOutputStream zos) throws IOException {
         ZipEntry textEntry = new ZipEntry(TEXT_FILE);
@@ -133,6 +141,13 @@ public class NTMFile {
         zos.closeEntry();
     }
 
+    /**
+     * Saves all images added to the editor as a serialized ArrayList.
+     *
+     * @param editor the EditorWindow containing image components.
+     * @param zos    the ZipOutputStream to write image data to.
+     * @throws IOException if an I/O error occurs.
+     */
     private static void saveImages(EditorWindow editor, ZipOutputStream zos) throws IOException {
         ZipEntry imagesEntry = new ZipEntry(IMAGES_FILE);
         zos.putNextEntry(imagesEntry);
@@ -165,11 +180,12 @@ public class NTMFile {
 
     /**
      * Loads the state of the EditorWindow from a file.
+     * Restores both the styled text content and images.
      *
-     * @param editor   the EditorWindow instance to load into
-     * @param filePath the path to the file
-     * @throws IOException            if an I/O error occurs
-     * @throws ClassNotFoundException if a class cannot be found
+     * @param editor   the EditorWindow instance to load into.
+     * @param filePath the path to the file.
+     * @throws IOException            if an I/O error occurs.
+     * @throws ClassNotFoundException if a required class is not found.
      */
     public static void loadFromFile(EditorWindow editor, String filePath) throws IOException, ClassNotFoundException {
 
@@ -190,8 +206,12 @@ public class NTMFile {
     }
 
     /**
-     * Loads the styled text content and re-applies both the plain text and its
-     * style spans.
+     * Loads the styled text content and re-applies both the plain text and its style spans.
+     *
+     * @param editor the EditorWindow to load text into.
+     * @param zis    the ZipInputStream from which to read.
+     * @throws IOException            if an I/O error occurs.
+     * @throws ClassNotFoundException if the StyledDocument class is not found.
      */
     private static void loadTextContent(EditorWindow editor, ZipInputStream zis) throws IOException, ClassNotFoundException {
         ObjectInputStream ois = new ObjectInputStream(zis);
@@ -211,6 +231,14 @@ public class NTMFile {
         richTextArea.setStyleSpans(0, builder.create());
     }
 
+    /**
+     * Loads image data from the ZIP archive and recreates ImageComponents.
+     *
+     * @param editor the EditorWindow to load images into.
+     * @param zis    the ZipInputStream from which to read.
+     * @throws IOException            if an I/O error occurs.
+     * @throws ClassNotFoundException if the ImageData class is not found.
+     */
     private static void loadImages(EditorWindow editor, ZipInputStream zis) throws IOException, ClassNotFoundException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
@@ -241,15 +269,30 @@ public class NTMFile {
         }
     }
 
+    /**
+     * Marks the document as changed and updates the filename label in the toolbar.
+     *
+     * @param toolBar the ToolBar instance to update.
+     */
     public static void markChanged(ToolBar toolBar) {
         changedSinceLastSave = true;
         toolBar.updateFilenameLabel();
     }
 
+    /**
+     * Indicates whether the document has been changed since the last save.
+     *
+     * @return true if the document has unsaved changes; false otherwise.
+     */
     public static boolean getChangedSinceLastSave() {
         return changedSinceLastSave;
     }
 
+    /**
+     * Retrieves the last saved file path.
+     *
+     * @return the last saved file path, or null if not set.
+     */
     public static String getLastSavedPath() {
         return lastSavedPath;
     }

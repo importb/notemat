@@ -2,7 +2,6 @@ package com.notemat.Components;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
@@ -14,6 +13,13 @@ import org.fxmisc.richtext.InlineCssTextArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
+
+
+/**
+ * The StyleBar class provides a toolbar for styling text within an
+ * InlineCssTextArea. It allows the user to select the font, font size,
+ * bold, italic, underline, and text color.
+ */
 public class StyleBar extends HBox {
     private final ComboBox<String> fontCombo;
     private final ComboBox<Integer> sizeCombo;
@@ -22,10 +28,16 @@ public class StyleBar extends HBox {
     private final ToggleButton underlineToggle;
     private final ColorPicker textColorPicker;
     private final InlineCssTextArea textArea;
+
     private boolean ignoreControlEvents = false;
     private boolean ignoreCaretUpdate = false;
 
 
+    /**
+     * Constructs a StyleBar for the specified InlineCssTextArea.
+     *
+     * @param textArea the text area to be styled.
+     */
     public StyleBar(InlineCssTextArea textArea) {
         this.textArea = textArea;
 
@@ -80,9 +92,7 @@ public class StyleBar extends HBox {
         });
 
         // Listen for selection changes and caret movement
-        textArea.selectionProperty().addListener((obs, oldSel, newSel) -> {
-            updateStyleControlsFromSelection();
-        });
+        textArea.selectionProperty().addListener((obs, oldSel, newSel) -> updateStyleControlsFromSelection());
 
         // Add the controls to the HBox.
         getChildren().addAll(fontCombo, sizeCombo, boldToggle, italicToggle, underlineToggle, textColorPicker);
@@ -275,7 +285,9 @@ public class StyleBar extends HBox {
     }
 
     /**
-     * Build a complete CSS style string based on the current state of the style bar controls.
+     * Builds a complete CSS style string based on the current state of the style bar controls.
+     *
+     * @return The CSS style string.
      */
     public String getStyleBarStyle() {
         StringBuilder sb = new StringBuilder();
@@ -289,8 +301,11 @@ public class StyleBar extends HBox {
     }
 
     /**
-     * Helper to convert a Color to a hex string (e.g., "#F0F0FA").
-     * Special-case the transparent color.
+     * Converts a Color to its hexadecimal string representation.
+     * The transparent color is handled as a special case.
+     *
+     * @param color the Color to convert.
+     * @return the hexadecimal string (e.g., "#F0F0FA") or "transparent" if applicable.
      */
     private String colorToHex(Color color) {
         if (color.equals(Color.TRANSPARENT)) {
@@ -305,6 +320,9 @@ public class StyleBar extends HBox {
     /**
      * Extracts the font family from a CSS style string.
      * Expected format: -fx-font-family: 'Arial';
+     *
+     * @param style the CSS style string.
+     * @return the font family if found; otherwise null.
      */
     private String extractFontFamily(String style) {
         Pattern pattern = Pattern.compile("-fx-font-family:\\s*'([^']+)'");
@@ -315,6 +333,9 @@ public class StyleBar extends HBox {
     /**
      * Extracts the font size (in points) from a CSS style string.
      * Expected format: -fx-font-size: 12pt;
+     *
+     * @param style the CSS style string.
+     * @return the font size if found; otherwise null.
      */
     private Integer extractFontSize(String style) {
         Pattern pattern = Pattern.compile("-fx-font-size:\\s*(\\d+)pt");
@@ -330,7 +351,11 @@ public class StyleBar extends HBox {
     }
 
     /**
-     * A generic helper to extract a property from the CSS string using a regex.
+     * A generic helper to extract a property value from a CSS string using a regex.
+     *
+     * @param style the CSS style string.
+     * @param regex the regular expression to find the property.
+     * @return the property value if found; otherwise null.
      */
     private String extractProperty(String style, String regex) {
         Pattern pattern = Pattern.compile(regex);

@@ -13,7 +13,13 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
+/**
+ * Provides functionality to interact with the Gemini API.
+ * This class sends a prompt to the API and returns the AI-generated response.
+ */
 public class AskAI {
+    // Extra instructions to be appended to the user's prompt.
     private static final String INPUT_EXTRA = "\nKeep your answer short, simple and factual. Don't use any formatting. Your prompt is: ";
 
     /**
@@ -66,6 +72,15 @@ public class AskAI {
         return "Error when generating a response.";
     }
 
+    /**
+     * Creates an HTTP POST request to the specified URL with the given input.
+     * Constructs the JSON payload and returns the appropriate input stream for the response.
+     *
+     * @param input     The prompt text to send.
+     * @param urlString The API endpoint URL.
+     * @return The input stream from the connection (input or error stream).
+     * @throws IOException if an I/O error occurs.
+     */
     private static InputStream getInputStream(String input, String urlString) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -89,6 +104,12 @@ public class AskAI {
         return (responseCode >= 200 && responseCode < 300) ? connection.getInputStream() : connection.getErrorStream();
     }
 
+    /**
+     * Filters the input string by replacing double quotes with single quotes.
+     *
+     * @param input The original input string.
+     * @return The filtered string.
+     */
     private static String filterString(String input) {
         String result;
 
