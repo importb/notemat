@@ -1,5 +1,4 @@
 plugins {
-    id 'application'
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
@@ -29,23 +28,6 @@ dependencies {
     implementation 'org.json:json:20231013'
 }
 
-application {
-    mainClass = 'com.notemat.Launcher'
-}
-
-test {
-    useJUnitPlatform()
-}
-
-run {
-    jvmArgs = [
-            '--module-path',
-            configurations.runtimeClasspath.asPath,
-            '--add-modules',
-            'javafx.base,javafx.graphics,javafx.controls,javafx.fxml,javafx.swing'
-    ]
-}
-
 shadowJar {
     archiveBaseName.set('notemat')
     archiveClassifier.set('')
@@ -54,4 +36,12 @@ shadowJar {
     manifest {
         attributes 'Main-Class': 'com.notemat.Launcher'
     }
+}
+
+tasks.build {
+    dependsOn shadowJar
+}
+
+tasks.jar {
+    enabled = false
 }
