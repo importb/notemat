@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.json.JSONArray;
@@ -43,7 +45,12 @@ public class AskAI {
         String model = Preferences.getGeminiModel().toLowerCase();
 
         String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-" + model + ":generateContent?key=" + apiKey;
-        InputStream is = getInputStream(input, urlString);
+        InputStream is;
+        try {
+            is = getInputStream(input, urlString);
+        } catch (URISyntaxException e) {
+            return "Error when generating a response.";
+        }
 
         StringBuilder response = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -81,8 +88,9 @@ public class AskAI {
      * @return The input stream from the connection (input or error stream).
      * @throws IOException if an I/O error occurs.
      */
-    private static InputStream getInputStream(String input, String urlString) throws IOException {
-        URL url = new URL(urlString);
+    private static InputStream getInputStream(String input, String urlString) throws IOException, URISyntaxException {
+        URI uri = new URI(urlString);
+        URL url = uri.toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         // Set up the request.
