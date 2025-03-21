@@ -62,31 +62,17 @@ public class NTMFile {
      * Indicates that the next {@code length} characters should have the
      * specified inline CSS represented by {@code style}.
      */
-    private static class StyleSpanData implements Serializable {
-        @Serial
-        private static final long serialVersionUID = 1L;
-        public final int length;
-        public final String style;
-
-        public StyleSpanData(int length, String style) {
-            this.length = length;
-            this.style = style;
-        }
+    private record StyleSpanData(int length, String style) implements Serializable {
+            @Serial
+            private static final long serialVersionUID = 1L;
     }
 
     /**
      * Serializable representation of the styled document.
      */
-    private static class StyledDocument implements Serializable {
-        @Serial
-        private static final long serialVersionUID = 1L;
-        public final String text;
-        public final ArrayList<StyleSpanData> spans;
-
-        public StyledDocument(String text, ArrayList<StyleSpanData> spans) {
-            this.text = text;
-            this.spans = spans;
-        }
+    private record StyledDocument(String text, ArrayList<StyleSpanData> spans) implements Serializable {
+            @Serial
+            private static final long serialVersionUID = 1L;
     }
 
     /**
