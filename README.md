@@ -1,6 +1,8 @@
 # Notemat
 Notemat is a powerful and versatile note-taking application designed to help users create, edit, and manage styled text and images with ease. Whether you're jotting down quick notes, organizing your thoughts, or working on a detailed project, Notemat provides the tools you need to stay productive.
 
+![catinabox](images/example.png)
+
 ---
 
 ## Features
