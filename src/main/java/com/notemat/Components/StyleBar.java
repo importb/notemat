@@ -139,7 +139,7 @@ public class StyleBar extends HBox {
         // Update controls without triggering style changes
         ignoreControlEvents = true;
 
-        if (extractedFont != null && (extractedFont.equals("Arial") || extractedFont.equals("Lexend"))) {
+        if (extractedFont != null) {
             fontCombo.setValue(extractedFont);
         }
         if (extractedSize != null) {
