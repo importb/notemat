@@ -43,8 +43,8 @@ public class AskAI {
 
         // Build the URL
         String model = Preferences.getGeminiModel().toLowerCase();
-
         String urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-" + model + ":generateContent?key=" + apiKey;
+
         InputStream is;
         try {
             is = getInputStream(input, urlString);

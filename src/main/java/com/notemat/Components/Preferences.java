@@ -113,7 +113,7 @@ public class Preferences extends Stage {
 
         // Gemini Model combobox
         Label geminiModelLabel = new Label("Gemini Model:");
-        geminiModelComboBox = new ComboBox<>(FXCollections.observableArrayList("Flash", "Flash-Lite", "Pro-exp-02-05"));
+        geminiModelComboBox = new ComboBox<>(FXCollections.observableArrayList("Flash", "Flash-Lite"));
         String currentModel = properties.getProperty(KEY_GEMINI_MODEL, "Flash");
         geminiModelComboBox.setValue(currentModel);
         HBox geminiModelBox = new HBox(10, geminiModelLabel, geminiModelComboBox);
