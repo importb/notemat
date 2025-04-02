@@ -1,8 +1,10 @@
 package com.notemat.Components;
 
 import com.notemat.Utils.AskAI;
+import com.notemat.Utils.Gemini;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import org.apache.http.HttpException;
 import org.fxmisc.richtext.InlineCssTextArea;
 import java.io.IOException;
 
@@ -15,6 +17,7 @@ public class ContextMenu {
     private final InlineCssTextArea textArea;
     private final javafx.scene.control.ContextMenu contextMenu;
     private final EditorWindow editor;
+    private final Gemini gemini = new Gemini();
 
     /**
      * Constructor to initialize the context menu.
@@ -50,30 +53,31 @@ public class ContextMenu {
     }
 
     private void querySelectedTextToAI() {
-        try {
-            // Get selection area, style and text.
-            int selectionStart = textArea.getSelection().getStart();
-            int selectionEnd = textArea.getSelection().getEnd();
-            String currentStyle = textArea.getStyleAtPosition(selectionStart);
-            String toAsk = textArea.getText(selectionStart, selectionEnd);
+        // Get selection area, style and text.
+        int selectionStart = textArea.getSelection().getStart();
+        int selectionEnd = textArea.getSelection().getEnd();
+        String currentStyle = textArea.getStyleAtPosition(selectionStart);
+        String toAsk = textArea.getText(selectionStart, selectionEnd);
 
-            if (!toAsk.isEmpty()) {
-                // Change the color to light purple.
-                String updatedStyle = editor.getStylebar().updateCssProperty(currentStyle, "-fx-fill", "#b380b3");
+        if (!toAsk.isEmpty()) {
+            // Change the color to light purple.
+            String updatedStyle = editor.getStylebar().updateCssProperty(currentStyle, "-fx-fill", "#b380b3");
 
-                // Query Gemini.
-                String result = AskAI.askAI(toAsk);
-
-                // Insert the response with a custom style, to the end add a space with the old styling.
-                textArea.insertText(selectionEnd, "\n" + result);
-                textArea.setStyle(selectionEnd, selectionEnd + result.length() + 1, updatedStyle);
-                textArea.insertText(selectionEnd + result.length() + 1, " ");
-                textArea.setStyle(selectionEnd + result.length() + 1, selectionEnd + result.length() + 2, currentStyle);
+            // Query Gemini.
+            String result = "Error generating a response.";
+            try {
+                result = gemini.getResponse(Preferences.getGeminiModel(), toAsk).text();
+            } catch (HttpException | IOException e) {
+                // fancy error catch or smth.
             }
 
-        } catch (IOException ex) {
-            System.out.println("Error: " + ex.getMessage());
+            // Insert the response with a custom style, to the end add a space with the old styling.
+            textArea.insertText(selectionEnd, "\n" + result);
+            textArea.setStyle(selectionEnd, selectionEnd + result.length() + 1, updatedStyle);
+            textArea.insertText(selectionEnd + result.length() + 1, " ");
+            textArea.setStyle(selectionEnd + result.length() + 1, selectionEnd + result.length() + 2, currentStyle);
         }
+
     }
 
     /**

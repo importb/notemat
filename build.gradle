@@ -20,13 +20,19 @@ if (osName.contains('win')) {
 }
 
 dependencies {
+    // JavaFX dependencies
     implementation "org.openjfx:javafx-base:20.0.2:${javafxPlatform}"
     implementation "org.openjfx:javafx-graphics:20.0.2:${javafxPlatform}"
     implementation "org.openjfx:javafx-controls:20.0.2:${javafxPlatform}"
     implementation "org.openjfx:javafx-fxml:20.0.2:${javafxPlatform}"
     implementation "org.openjfx:javafx-swing:20.0.2:${javafxPlatform}"
+
+    // Other UI and utility dependencies
     implementation 'org.fxmisc.richtext:richtextfx:0.11.0'
     implementation 'org.json:json:20231013'
+
+    // Google Generative AI SDK
+    implementation 'com.google.genai:google-genai:0.3.0'
 }
 
 shadowJar {
@@ -37,6 +43,10 @@ shadowJar {
     manifest {
         attributes 'Main-Class': 'com.notemat.Launcher'
     }
+
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
 }
 
 tasks.build {
