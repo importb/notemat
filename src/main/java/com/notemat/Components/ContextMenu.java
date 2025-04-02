@@ -1,12 +1,15 @@
 package com.notemat.Components;
 
-import com.notemat.Utils.AskAI;
+import com.google.genai.types.GenerateContentResponse;
 import com.notemat.Utils.Gemini;
+import javafx.application.Platform;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import org.apache.http.HttpException;
 import org.fxmisc.richtext.InlineCssTextArea;
+
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 
 /**
@@ -22,8 +25,8 @@ public class ContextMenu {
     /**
      * Constructor to initialize the context menu.
      *
-     * @param editor    Main editor window.
-     * @param textArea  Main text area.
+     * @param editor   Main editor window.
+     * @param textArea Main text area.
      */
     public ContextMenu(EditorWindow editor, InlineCssTextArea textArea) {
         this.editor = editor;
@@ -63,22 +66,45 @@ public class ContextMenu {
             // Change the color to light purple.
             String updatedStyle = editor.getStylebar().updateCssProperty(currentStyle, "-fx-fill", "#b380b3");
 
+            // Insert "Generating..." and record its start/end positions.
+            String generating = "Generating...";
+            String generatingText = "\n" + generating;
+            textArea.insertText(selectionEnd, generatingText);
+            int generatingEnd = selectionEnd + generatingText.length();
+            textArea.setStyle(selectionEnd, generatingEnd, updatedStyle);
+            textArea.insertText(generatingEnd, " ");
+            textArea.setStyle(generatingEnd, generatingEnd + 1, currentStyle);
+
             // Query Gemini.
-            String result = "Error generating a response.";
             try {
-                result = gemini.getResponse(Preferences.getGeminiModel(), toAsk).text();
+                CompletableFuture<GenerateContentResponse> resp = gemini.getResponse(Preferences.getGeminiModel(), toAsk);
+
+                resp.thenAccept(response -> {
+                    Platform.runLater(() -> {
+                        // Remove the "Generating..." text if it is still present.
+                        textArea.deleteText(selectionEnd, generatingEnd);
+
+                        // Insert the generated response.
+                        String responseText = "\n" + response.text();
+                        textArea.insertText(selectionEnd, responseText);
+                        textArea.setStyle(selectionEnd, selectionEnd + responseText.length(), updatedStyle);
+                        textArea.insertText(selectionEnd + responseText.length(), " ");
+                        textArea.setStyle(selectionEnd + responseText.length(), selectionEnd + responseText.length() + 1, currentStyle);
+                    });
+                });
             } catch (HttpException | IOException e) {
-                // fancy error catch or smth.
+                // Remove the "Generating..." text if it's still there.
+                textArea.deleteText(selectionEnd, generatingEnd);
+                String result = "Error generating a response.";
+                String errorText = "\n" + result;
+                textArea.insertText(selectionEnd, errorText);
+                textArea.setStyle(selectionEnd, selectionEnd + errorText.length(), updatedStyle);
+                textArea.insertText(selectionEnd + errorText.length(), " ");
+                textArea.setStyle(selectionEnd + errorText.length(), selectionEnd + errorText.length() + 1, currentStyle);
             }
-
-            // Insert the response with a custom style, to the end add a space with the old styling.
-            textArea.insertText(selectionEnd, "\n" + result);
-            textArea.setStyle(selectionEnd, selectionEnd + result.length() + 1, updatedStyle);
-            textArea.insertText(selectionEnd + result.length() + 1, " ");
-            textArea.setStyle(selectionEnd + result.length() + 1, selectionEnd + result.length() + 2, currentStyle);
         }
-
     }
+
 
     /**
      * Returns the ContextMenu instance.

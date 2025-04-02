@@ -5,7 +5,9 @@ import com.google.genai.Client;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
+import com.google.genai.ResponseStream;
 import com.google.genai.types.*;
 import com.notemat.Components.Preferences;
 import org.apache.http.HttpException;
@@ -49,7 +51,7 @@ public class Gemini {
         return "gemini-2.0-flash-lite";
     }
 
-    public GenerateContentResponse getResponse(String model, String query) throws HttpException, IOException {
-        return client.models.generateContent(formatModel(model), query, config);
+    public CompletableFuture<GenerateContentResponse> getResponse(String model, String query) throws HttpException, IOException {
+        return client.async.models.generateContent(formatModel(model), query, config);
     }
 }
