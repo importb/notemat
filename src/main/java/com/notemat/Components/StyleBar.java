@@ -55,12 +55,15 @@ public class StyleBar extends HBox {
         // Bold, Italic, and Underline.
         boldToggle = new ToggleButton("B");
         boldToggle.getStyleClass().add("stylebar-togglebutton");
+        boldToggle.getStyleClass().add("stylebar-togglebutton-bold");
 
         italicToggle = new ToggleButton("I");
         italicToggle.getStyleClass().add("stylebar-togglebutton");
+        italicToggle.getStyleClass().add("stylebar-togglebutton-italic");
 
         underlineToggle = new ToggleButton("U");
         underlineToggle.getStyleClass().add("stylebar-togglebutton");
+        underlineToggle.getStyleClass().add("stylebar-togglebutton-underline");
 
         boldToggle.setSelected(false);
         italicToggle.setSelected(false);

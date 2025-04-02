@@ -140,6 +140,18 @@
     -fx-border-color: transparent;
 }
 
+.stylebar-togglebutton-bold {
+    -fx-font-weight: bold;
+}
+
+.stylebar-togglebutton-italic {
+    -fx-font-style: italic;
+}
+
+.stylebar-togglebutton-underline {
+    -fx-underline: true;
+}
+
 /* ------------------------- */
 /* Stylebar Colorbox styling */
 /* ------------------------- */
