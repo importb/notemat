@@ -4,6 +4,7 @@ import com.notemat.Filesystem.NTMFile;
 import com.notemat.Utils.KeyBindings;
 import com.notemat.Utils.WindowResizing;
 import javafx.application.Platform;
+import javafx.geometry.Bounds;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
@@ -20,6 +21,7 @@ import org.fxmisc.richtext.InlineCssTextArea;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -256,10 +258,14 @@ public class EditorWindow extends Stage {
         if (clipboard.hasImage()) {
             Image clipboardImage = clipboard.getImage();
             ImageComponent imageComponent = new ImageComponent(clipboardImage);
-            imageComponent.setManaged(false);
+            imageComponent.setManaged(false); // Allow manual positioning
+
+            double verticalPosition = richTextArea.getEstimatedScrollY();
             imageComponent.setLayoutX(10);
-            imageComponent.setLayoutY(10);
+            imageComponent.setLayoutY(verticalPosition + 10);
+
             imageLayer.getChildren().add(imageComponent);
+            NTMFile.markChanged(toolBar);
         } else {
             richTextArea.paste();
         }
