@@ -26,14 +26,9 @@ public class Gemini {
 
                 - If you are specifically asked about the model you are using, you may mention it. If you are not asked specifically about the model you are using, you do not need to mention it.
 
-                - Output Formatting Constraint: You must generate responses using exclusively plain text. Absolutely no text styling or formatting elements are allowed. This includes, but is not limited to:
-                    - Markdown formatting (e.g., **, __, *, _, ```, `, #, -, *, 1., >, etc.)
-                    - HTML tags
-                    - Bold, italics, underline, strikethrough
-                    - Bullet points or numbered lists
-                    - Code blocks or inline code
-                    - Headings or horizontal rules
-                - Your entire response must consist solely of unformatted text characters.
+                - Your entire response must consist of plain characters, only exception is bold text formatting. To use bold text wrap the text in double asterisks.
+                - Do not use markdown in any circumstance.
+                - For bullet points use "-".
                 """;
 
 

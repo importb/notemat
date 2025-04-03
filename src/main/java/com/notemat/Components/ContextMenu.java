@@ -9,6 +9,8 @@ import org.apache.http.HttpException;
 import org.fxmisc.richtext.InlineCssTextArea;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -64,7 +66,10 @@ public class ContextMenu {
 
         if (!toAsk.isEmpty()) {
             // Change the color to light purple.
-            String updatedStyle = editor.getStylebar().updateCssProperty(currentStyle, "-fx-fill", "#b380b3");
+            String updatedStyle = editor.getStylebar().updateCssProperty(currentStyle, "-fx-fill", "#b380b3").replace("-fx-font-weight: bold", "-fx-font-style: normal");
+            String updatedStyleBold = updatedStyle.replace("-fx-font-style: normal", "-fx-font-weight: bold");
+
+            System.out.println(updatedStyle);
 
             // Insert "Generating..." and record its start/end positions.
             String generating = "Generating...";
@@ -81,17 +86,61 @@ public class ContextMenu {
 
                 resp.thenAccept(response -> {
                     Platform.runLater(() -> {
+                        // Get the raw response text (including the newline).
+                        String rawResponse = "\n" + response.text();
+                        StringBuilder processedResponse = new StringBuilder();
+
+                        // List to keep track of bold regions. Each element is a 2-element int array: [startIndex, endIndex] relative to the final inserted text.
+                        List<int[]> boldRanges = new ArrayList<>();
+
+                        // Process rawResponse to remove the "**" markers.
+                        for (int i = 0; i < rawResponse.length(); ) {
+                            // Check if the current position starts with "**"
+                            if (rawResponse.startsWith("**", i)) {
+                                int boldStart = i + 2;
+                                int boldEnd = rawResponse.indexOf("**", boldStart);
+
+                                // If no matching closing "**" is found, just append the rest.
+                                if (boldEnd == -1) {
+                                    processedResponse.append(rawResponse.substring(i));
+                                    break;
+                                }
+                                // Record where the bold text will start within the processed text.
+                                int startBoldInProcessed = processedResponse.length();
+                                // Append the text between the markers.
+                                String boldText = rawResponse.substring(boldStart, boldEnd);
+                                processedResponse.append(boldText);
+                                // Record the end index.
+                                int endBoldInProcessed = processedResponse.length();
+                                // Save the bold region (we will need to adjust the absolute offset
+                                // later when the text is inserted into the textArea).
+                                boldRanges.add(new int[]{startBoldInProcessed + selectionEnd, endBoldInProcessed + selectionEnd});
+                                // Move past the markers.
+                                i = boldEnd + 2;
+                            } else {
+                                // Append the normal character.
+                                processedResponse.append(rawResponse.charAt(i));
+                                i++;
+                            }
+                        }
+
                         // Remove the "Generating..." text if it is still present.
                         textArea.deleteText(selectionEnd, generatingEnd);
 
-                        // Insert the generated response.
-                        String responseText = "\n" + response.text();
-                        textArea.insertText(selectionEnd, responseText);
-                        textArea.setStyle(selectionEnd, selectionEnd + responseText.length(), updatedStyle);
-                        textArea.insertText(selectionEnd + responseText.length(), " ");
-                        textArea.setStyle(selectionEnd + responseText.length(), selectionEnd + responseText.length() + 1, currentStyle);
+                        // Insert the processed text into the textArea.
+                        String finalResponse = processedResponse.toString();
+                        textArea.insertText(selectionEnd, finalResponse);
+
+                        // First, apply the default updatedStyle to the entire inserted text.
+                        textArea.setStyle(selectionEnd, selectionEnd + finalResponse.length(), updatedStyle);
+
+                        // Then, for each bold segment that we detected, update its style.
+                        for (int[] range : boldRanges) {
+                            textArea.setStyle(range[0], range[1], updatedStyleBold);
+                        }
                     });
                 });
+
             } catch (HttpException | IOException e) {
                 // Remove the "Generating..." text if it's still there.
                 textArea.deleteText(selectionEnd, generatingEnd);
