@@ -42,6 +42,7 @@ public class ContextMenu {
         MenuItem copy = new MenuItem("Copy");
         MenuItem paste = new MenuItem("Paste");
         MenuItem ask = new MenuItem("Ask Gemini");
+        MenuItem debug = new MenuItem("debug");
 
         // Actions
         cut.setOnAction(e -> textArea.cut());
@@ -50,7 +51,7 @@ public class ContextMenu {
         ask.setOnAction(e -> querySelectedTextToAI());
 
         if (Preferences.getEnableGemini()) {
-            contextMenu.getItems().addAll(cut, copy, paste, new SeparatorMenuItem(), ask);
+            contextMenu.getItems().addAll(cut, copy, paste, new SeparatorMenuItem(), ask, debug);
         } else {
             contextMenu.getItems().addAll(cut, copy, paste);
         }

@@ -317,3 +317,24 @@
 .preferences .toolbar .button:hover {
     -fx-text-fill: #BDBDFF;
 }
+
+/* ------------- */
+/* Popup styling */
+/* ------------- */
+.msg-popup .button {
+    -fx-background-color: #14141E;
+    -fx-text-fill: #F0F0FA;
+    -fx-font: 14px "Lexend";
+    -fx-pref-height: 30px;
+    -fx-border-radius: 2px;
+    -fx-border-color: transparent;
+}
+
+.msg-popup .button:hover {
+    -fx-background-color: #BDBDFF;
+}
+
+.msg-popup .label {
+    -fx-font: 14px "Lexend";
+    -fx-text-fill: #F0F0FA;
+}

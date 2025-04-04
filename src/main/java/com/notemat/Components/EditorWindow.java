@@ -109,6 +109,11 @@ public class EditorWindow extends Stage {
         contextMenu = new ContextMenu(this, richTextArea);
         new WindowResizing(this);
         new KeyBindings(this, scene, richTextArea, styleBar, imageLayer);
+
+        setOnCloseRequest(event -> {
+            event.consume();
+            showCloseConfirmation();
+        });
     }
 
     /**
@@ -269,6 +274,13 @@ public class EditorWindow extends Stage {
         } else {
             richTextArea.paste();
         }
+    }
+
+    /**
+     * Shows a confirmation dialog when the user attempts to close the window.
+     */
+    private void showCloseConfirmation() {
+        // todo
     }
 
     /**
