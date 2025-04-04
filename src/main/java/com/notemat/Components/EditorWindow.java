@@ -279,8 +279,17 @@ public class EditorWindow extends Stage {
     /**
      * Shows a confirmation dialog when the user attempts to close the window.
      */
-    private void showCloseConfirmation() {
-        // todo
+    public void showCloseConfirmation() {
+        if (NTMFile.getChangedSinceLastSave()) {
+            Popup.callPopup(
+                    "Unsaved Changes",
+                    "You have unchanged changes, are you sure you want to exit?",
+                    "Exit",
+                    this::close
+            );
+        } else {
+            close();
+        }
     }
 
     /**

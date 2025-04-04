@@ -39,14 +39,18 @@ public class Popup extends Stage {
 
         // Toolbar
         HBox toolbar = createToolbar(header);
+        toolbar.getStyleClass().add("toolbar");
 
         // description
         Label descriptionLabel = new Label(description);
+        descriptionLabel.setWrapText(true);
+        descriptionLabel.setMaxWidth(380);
+        descriptionLabel.setMinHeight(80);
         descriptionLabel.getStyleClass().add("popup-description");
 
         VBox contentBox = new VBox(10, descriptionLabel);
         contentBox.setAlignment(Pos.TOP_LEFT);
-        contentBox.setPadding(new Insets(28, 10, 10, 10));
+        contentBox.setPadding(new Insets(10, 10, 10, 10));
 
         // Buttons
         Button cancelButton = new Button("Cancel");
@@ -60,13 +64,13 @@ public class Popup extends Stage {
 
         HBox buttonBox = new HBox(10, cancelButton, userButton);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        buttonBox.setPadding(new Insets(40, 10, 10, 10));
+        buttonBox.setPadding(new Insets(16, 10, 10, 10));
 
         // Combine all sections into the root container
         VBox root = new VBox(10, toolbar, contentBox, buttonBox);
         root.getStyleClass().add("msg-popup");
 
-        Scene scene = new Scene(root, 300, 200);
+        Scene scene = new Scene(root, 400, 220);
         setScene(scene);
 
         // Apply theme from CSS resources

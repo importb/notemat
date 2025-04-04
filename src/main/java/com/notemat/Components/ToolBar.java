@@ -122,8 +122,7 @@ public class ToolBar extends BorderPane {
 
         Button closeButton = new Button("X");  // close
         closeButton.setOnAction(event -> {
-            Stage stage = (Stage) getScene().getWindow();
-            stage.close();
+            editor.showCloseConfirmation();
         });
 
         windowControls.getChildren().addAll(minimizeButton, maximizeButton, closeButton);
