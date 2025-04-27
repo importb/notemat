@@ -41,7 +41,8 @@ public class Gemini {
     private String formatModel(String model) {
         if (Objects.equals(model, "Gemini 2.0 Flash")) return "gemini-2.0-flash";
         if (Objects.equals(model, "Gemini 2.0 Flash-Lite")) return "gemini-2.0-flash-lite";
-        if (Objects.equals(model, "Gemini 2.5 Pro")) return "gemini-2.5-pro-exp-03-25";
+        if (Objects.equals(model, "Gemini 2.5 Flash")) return "gemini-2.5-flash-preview-04-17";
+        if (Objects.equals(model, "Gemini 2.5 Pro")) return "gemini-2.5-pro-preview-03-25";
 
         return "gemini-2.0-flash-lite";
     }
